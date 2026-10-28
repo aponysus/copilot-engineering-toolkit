@@ -103,12 +103,25 @@ No extended agents or skills are included.
 
 For repeated installations, the CLI offers component selection, preview diffs,
 conflict refusal, backups, and read-only audits. It requires Python 3.11+.
-From a clone, install it in your chosen Python environment:
+From the clone's root, install it as an isolated tool with
+[uv](https://docs.astral.sh/uv/guides/tools/):
 
 ```sh
-python -m pip install .
+uv tool install .
 copilot-toolkit install project /work/my-project --agents systems-investigator --skills change-impact-analysis --dry-run
 ```
+
+If the command is not on your `PATH`, run `uv tool update-shell` and restart your
+shell. To run directly from the checkout instead, use
+`uv run --locked copilot-toolkit` followed by any command below, for example:
+
+```sh
+uv run --locked copilot-toolkit catalog
+```
+
+`uv run` manages the project's environment and installs the package automatically;
+no separate package installation or `pip` module is needed. If you prefer pip,
+`python -m pip install .` remains supported in an environment that includes pip.
 
 No selection flags means the three-component **starter**, not the full collection.
 Global preferences, prompts, and language rules require explicit selection.
