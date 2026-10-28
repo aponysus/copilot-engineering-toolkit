@@ -1,36 +1,36 @@
 """Exercise preservation and failure boundaries using temporary files only."""
 
 import os
-from pathlib import Path
 import stat
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from copilot_engineering_toolkit.errors import ToolkitError
-from copilot_engineering_toolkit.install import Write, apply, prepare, preview
+from copilot_engineering_toolkit.install import Prepared, Write, apply, prepare, preview
 
 
 class InstallTests(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         # Resolve OS-owned aliases such as macOS /var for the test fixture only.
         self.root = Path(self.temp.name).resolve()
 
-    def apply(self, writes, **options):
+    def apply(self, writes: list[Prepared], *, force: bool = False) -> list[str]:
         events = []
-        apply(writes, emit=events.append, **options)
+        apply(writes, emit=events.append, force=force)
         return events
 
-    def test_preview_has_no_filesystem_side_effects(self):
+    def test_preview_has_no_filesystem_side_effects(self) -> None:
         stamp = self.root.stat().st_mtime_ns
         plan = prepare([Write(self.root / "missing/file.md", "héllo\n".encode())])
         self.assertIn("+héllo", preview(plan))
         self.assertEqual(list(self.root.iterdir()), [])
         self.assertEqual(self.root.stat().st_mtime_ns, stamp)
 
-    def test_identical_install_keeps_bytes_mtime_and_permissions(self):
+    def test_identical_install_keeps_bytes_mtime_and_permissions(self) -> None:
         path = self.root / "file"
         writes = [Write(path, b"same\r\n")]
         self.apply(prepare(writes))
@@ -41,7 +41,7 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(path.stat().st_mode, before.st_mode)
         self.assertEqual(len(list(self.root.iterdir())), 1)
 
-    def test_conflict_prevents_all_writes(self):
+    def test_conflict_prevents_all_writes(self) -> None:
         path = self.root / "existing"
         path.write_bytes(b"custom")
         plan = prepare([Write(self.root / "new", b"new"), Write(path, b"replacement")])
@@ -50,7 +50,7 @@ class InstallTests(unittest.TestCase):
         self.assertFalse((self.root / "new").exists())
         self.assertEqual(path.read_bytes(), b"custom")
 
-    def test_force_backs_up_exact_non_utf8_bytes_and_mode(self):
+    def test_force_backs_up_exact_non_utf8_bytes_and_mode(self) -> None:
         path = self.root / "existing"
         old = b"custom\r\n\xff"
         path.write_bytes(old)
@@ -59,38 +59,43 @@ class InstallTests(unittest.TestCase):
         plan = prepare([Write(path, b"new\n")])
         self.assertIn("Replace", preview(plan))
         events = self.apply(plan, force=True)
-        backup, = self.root.glob("existing.bak.*")
+        (backup,) = self.root.glob("existing.bak.*")
         self.assertEqual(backup.read_bytes(), old)
         self.assertEqual(stat.S_IMODE(backup.stat().st_mode), mode)
         self.assertEqual(stat.S_IMODE(path.stat().st_mode), mode)
         self.assertEqual(path.read_bytes(), b"new\n")
         self.assertTrue(events[0].startswith("Backup:"))
 
-    def test_later_invalid_destination_is_rejected_before_writes(self):
+    def test_later_invalid_destination_is_rejected_before_writes(self) -> None:
         (self.root / "directory").mkdir()
         with self.assertRaisesRegex(ToolkitError, "not a regular file"):
-            prepare([Write(self.root / "new", b"x"), Write(self.root / "directory", b"x")])
+            prepare(
+                [Write(self.root / "new", b"x"), Write(self.root / "directory", b"x")]
+            )
         self.assertFalse((self.root / "new").exists())
 
-    def test_file_parent_duplicate_and_traversal_are_rejected(self):
+    def test_file_parent_duplicate_and_traversal_are_rejected(self) -> None:
         (self.root / "file").write_bytes(b"x")
         cases = [
             [Write(self.root / "file/child", b"x")],
             [Write(self.root / "new", b"x"), Write(self.root / "new", b"y")],
             [Write(self.root / "../escape", b"x")],
-            [Write(self.root / "parent", b"x"), Write(self.root / "parent/child", b"y")],
+            [
+                Write(self.root / "parent", b"x"),
+                Write(self.root / "parent/child", b"y"),
+            ],
         ]
         for writes in cases:
             with self.subTest(writes=writes), self.assertRaises(ToolkitError):
                 prepare(writes)
 
-    def symlink(self, target, path, directory=False):
+    def symlink(self, target: Path, path: Path, directory: bool = False) -> None:
         try:
             path.symlink_to(target, target_is_directory=directory)
         except OSError as error:
             self.skipTest(f"Symlinks unavailable: {error}")
 
-    def test_dangling_link_and_directory_link_are_rejected(self):
+    def test_dangling_link_and_directory_link_are_rejected(self) -> None:
         link = self.root / "link"
         self.symlink(self.root / "absent", link)
         with self.assertRaises(ToolkitError):
@@ -102,7 +107,7 @@ class InstallTests(unittest.TestCase):
             prepare([Write(parent / "file", b"x")])
         self.assertFalse((self.root / "real/file").exists())
 
-    def test_changed_file_prevents_all_writes_after_preflight(self):
+    def test_changed_file_prevents_all_writes_after_preflight(self) -> None:
         path = self.root / "existing"
         path.write_bytes(b"old")
         plan = prepare([Write(self.root / "new", b"new"), Write(path, b"replacement")])
@@ -112,7 +117,7 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(path.read_bytes(), b"user edit")
         self.assertFalse((self.root / "new").exists())
 
-    def test_file_appearing_after_preflight_is_not_overwritten(self):
+    def test_file_appearing_after_preflight_is_not_overwritten(self) -> None:
         path = self.root / "new"
         plan = prepare([Write(path, b"proposed")])
         path.write_bytes(b"concurrent")
@@ -120,19 +125,21 @@ class InstallTests(unittest.TestCase):
             self.apply(plan)
         self.assertEqual(path.read_bytes(), b"concurrent")
 
-    def test_edit_during_backup_is_preserved(self):
+    def test_edit_during_backup_is_preserved(self) -> None:
         path = self.root / "existing"
         path.write_bytes(b"old")
-        def edit_on_backup(event):
+
+        def edit_on_backup(event: str) -> None:
             if event.startswith("Backup:"):
                 path.write_bytes(b"concurrent edit")
+
         with self.assertRaisesRegex(ToolkitError, "changed since preflight"):
             apply(prepare([Write(path, b"new")]), force=True, emit=edit_on_backup)
         self.assertEqual(path.read_bytes(), b"concurrent edit")
-        backup, = self.root.glob("existing.bak.*")
+        (backup,) = self.root.glob("existing.bak.*")
         self.assertEqual(backup.read_bytes(), b"old")
 
-    def test_symlink_parent_introduced_after_preflight_is_rejected(self):
+    def test_symlink_parent_introduced_after_preflight_is_rejected(self) -> None:
         parent = self.root / "missing"
         plan = prepare([Write(parent / "file", b"x")])
         outside = self.root / "outside"
@@ -142,32 +149,41 @@ class InstallTests(unittest.TestCase):
             self.apply(plan)
         self.assertEqual(list(outside.iterdir()), [])
 
-    def test_permission_failure_in_preflight(self):
+    def test_permission_failure_in_preflight(self) -> None:
         with patch("copilot_engineering_toolkit.install.os.access", return_value=False):
             with self.assertRaisesRegex(ToolkitError, "not writable"):
                 prepare([Write(self.root / "file", b"x")])
         self.assertEqual(list(self.root.iterdir()), [])
 
-    def test_failed_replacement_keeps_original_and_backup(self):
+    def test_failed_replacement_keeps_original_and_backup(self) -> None:
         path = self.root / "existing"
         path.write_bytes(b"old")
         plan = prepare([Write(path, b"new")])
-        with patch("copilot_engineering_toolkit.install.os.replace", side_effect=PermissionError("denied")):
+        with patch(
+            "copilot_engineering_toolkit.install.os.replace",
+            side_effect=PermissionError("denied"),
+        ):
             with self.assertRaisesRegex(ToolkitError, "0 file update"):
                 self.apply(plan, force=True)
         self.assertEqual(path.read_bytes(), b"old")
-        backup, = self.root.glob("existing.bak.*")
+        (backup,) = self.root.glob("existing.bak.*")
         self.assertEqual(backup.read_bytes(), b"old")
         self.assertFalse(list(self.root.glob(".existing.*")))
 
-    def test_partial_failure_reports_completed_count_and_cleans_temp(self):
+    def test_partial_failure_reports_completed_count_and_cleans_temp(self) -> None:
         actual_link = os.link
-        def fail_second(source, destination):
+
+        def fail_second(source: Path, destination: Path) -> None:
             if destination.name == "second":
                 raise OSError("unsupported publication")
             actual_link(source, destination)
-        plan = prepare([Write(self.root / "first", b"1"), Write(self.root / "second", b"2")])
-        with patch("copilot_engineering_toolkit.install.os.link", side_effect=fail_second):
+
+        plan = prepare(
+            [Write(self.root / "first", b"1"), Write(self.root / "second", b"2")]
+        )
+        with patch(
+            "copilot_engineering_toolkit.install.os.link", side_effect=fail_second
+        ):
             with self.assertRaisesRegex(ToolkitError, "1 file update"):
                 self.apply(plan)
         self.assertEqual((self.root / "first").read_bytes(), b"1")

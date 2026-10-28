@@ -1,21 +1,27 @@
 """Validate the distributable native content, including installed resources."""
 
-from importlib.resources import files
 import unittest
+from collections.abc import Iterator
+from importlib.resources import files
+from importlib.resources.abc import Traversable
 
 import yaml
 
-
 CATALOG = files("copilot_engineering_toolkit").joinpath("catalog")
 CORE_SKILLS = {
-    "repository-onboarding", "work-item-analysis", "change-impact-analysis",
-    "test-design", "legacy-contract-analysis", "api-contract-evolution",
-    "database-change-safety", "incident-triage",
+    "repository-onboarding",
+    "work-item-analysis",
+    "change-impact-analysis",
+    "test-design",
+    "legacy-contract-analysis",
+    "api-contract-evolution",
+    "database-change-safety",
+    "incident-triage",
 }
 CORE_AGENTS = {"architect", "systems-investigator", "test-engineer", "documentation"}
 
 
-def frontmatter(resource):
+def frontmatter(resource: Traversable) -> tuple[dict[str, object], str]:
     text = resource.read_text(encoding="utf-8")
     opening, metadata, body = text.split("---", 2)
     if opening or not body.strip():
@@ -26,7 +32,7 @@ def frontmatter(resource):
     return data, body
 
 
-def descendants(resource):
+def descendants(resource: Traversable) -> Iterator[Traversable]:
     for child in resource.iterdir():
         if child.is_dir():
             yield from descendants(child)
@@ -35,7 +41,7 @@ def descendants(resource):
 
 
 class ContentTests(unittest.TestCase):
-    def test_all_eight_core_skills_have_valid_native_metadata(self):
+    def test_all_eight_core_skills_have_valid_native_metadata(self) -> None:
         skills = list(CATALOG.joinpath("skills").iterdir())
         self.assertEqual({item.name for item in skills}, CORE_SKILLS)
         for folder in skills:
@@ -48,9 +54,13 @@ class ContentTests(unittest.TestCase):
                 self.assertTrue(data["description"].strip())
                 self.assertLessEqual(len(data["description"]), 1024)
 
-    def test_core_agents_preserve_repository_context_without_model_or_tool_pins(self):
+    def test_core_agents_preserve_repository_context_without_model_or_tool_pins(
+        self,
+    ) -> None:
         agents = list(CATALOG.joinpath("agents").iterdir())
-        self.assertEqual({a.name for a in agents}, {f"{a}.agent.md" for a in CORE_AGENTS})
+        self.assertEqual(
+            {a.name for a in agents}, {f"{a}.agent.md" for a in CORE_AGENTS}
+        )
         for agent in agents:
             with self.subTest(agent=agent.name):
                 data, _ = frontmatter(agent)
@@ -61,16 +71,25 @@ class ContentTests(unittest.TestCase):
                 self.assertNotIn("model", data)
                 self.assertNotIn("tools", data)
 
-    def test_language_rules_have_intended_scope(self):
+    def test_language_rules_have_intended_scope(self) -> None:
         # Each shipped glob intentionally covers one language at root and below.
-        for language, extension in {"csharp": "cs", "sql": "sql", "python": "py", "go": "go"}.items():
+        for language, extension in {
+            "csharp": "cs",
+            "sql": "sql",
+            "python": "py",
+            "go": "go",
+        }.items():
             with self.subTest(language=language):
-                data, _ = frontmatter(CATALOG.joinpath("instructions", f"{language}.instructions.md"))
+                data, _ = frontmatter(
+                    CATALOG.joinpath("instructions", f"{language}.instructions.md")
+                )
                 self.assertEqual(data["applyTo"], f"**/*.{extension}")
 
-    def test_templates_are_explicitly_incomplete(self):
+    def test_templates_are_explicitly_incomplete(self) -> None:
         templates = list(CATALOG.joinpath("templates").iterdir())
-        self.assertEqual({t.name for t in templates}, {"base", "dotnet", "python", "go"})
+        self.assertEqual(
+            {t.name for t in templates}, {"base", "dotnet", "python", "go"}
+        )
         for folder in templates:
             with self.subTest(template=folder.name):
                 text = folder.joinpath("AGENTS.md.tmpl").read_text(encoding="utf-8")
@@ -78,14 +97,21 @@ class ContentTests(unittest.TestCase):
                 self.assertIn("{{TEST_COMMAND}}", text)
                 self.assertEqual(text.count("{{"), text.count("}}"))
 
-    def test_task_prompts_are_packaged(self):
-        expected = {"analyze-work-item", "bootstrap-agents", "investigate-behavior", "review-change"}
+    def test_task_prompts_are_packaged(self) -> None:
+        expected = {
+            "analyze-work-item",
+            "bootstrap-agents",
+            "investigate-behavior",
+            "review-change",
+        }
         prompts = list(CATALOG.joinpath("prompts").iterdir())
-        self.assertEqual({p.name for p in prompts}, {f"{p}.prompt.md" for p in expected})
+        self.assertEqual(
+            {p.name for p in prompts}, {f"{p}.prompt.md" for p in expected}
+        )
         for prompt in prompts:
             self.assertTrue(prompt.read_text(encoding="utf-8").strip())
 
-    def test_finished_content_has_no_scaffold_tokens(self):
+    def test_finished_content_has_no_scaffold_tokens(self) -> None:
         for resource in descendants(CATALOG):
             if resource.name.endswith(".tmpl"):
                 continue

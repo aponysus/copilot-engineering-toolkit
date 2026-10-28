@@ -98,17 +98,10 @@ been live-tested for this library.
 
 ## Development
 
-Python 3.11+ is required for package development. In an isolated environment:
-
-```sh
-python -m pip install -e '.[test]'
-python -m unittest discover -s tests -v
-python -m pip wheel --no-deps . --wheel-dir dist
-```
-
-Tests check catalog structure, installer safety, and static audit behavior, not model behavior.
-Keep all distributable content in the catalog; do not add duplicate exports.
-See [contributing](CONTRIBUTING.md) for content conventions.
+Development uses Python 3.11+, uv, pytest, isort, Ruff, and Black. See
+[contributing](CONTRIBUTING.md#development-commands) for setup, checks, and builds.
+Tests cover catalog structure, installer safety, and static audit behavior, not
+model behavior. Keep distributable content in the catalog without duplicate exports.
 
 Licensed under [Apache-2.0](LICENSE). The library expresses the author's supplied
 engineering requirements and reference principles in native Copilot formats.
