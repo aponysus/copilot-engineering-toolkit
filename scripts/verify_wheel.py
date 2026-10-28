@@ -38,7 +38,8 @@ def verify(wheel: Path) -> None:
     """
     source = Path(__file__).resolve().parents[1]
     manifest = source / "manifest.json"
-    kinds = {item["type"] for item in json.loads(manifest.read_text())["components"]}
+    components = json.loads(manifest.read_text())["components"]
+    kinds = {item["type"] for item in components}
     resources = [
         manifest,
         *(
@@ -89,9 +90,18 @@ def verify(wheel: Path) -> None:
             ],
             root,
         )
-        probe = "from copilot_engineering_toolkit.catalog import Catalog; from importlib.metadata import requires; import json; assert not requires('copilot-engineering-toolkit'); print(json.dumps([c.id for c in Catalog().components if c.type == 'skills']))"
+        probe = (
+            "from copilot_engineering_toolkit.catalog import Catalog; "
+            "from importlib.metadata import requires; import json; "
+            "assert not requires('copilot-engineering-toolkit'); "
+            "print(json.dumps({c.id: c.tier for c in Catalog().components "
+            "if c.type == 'skills'}))"
+        )
         skills = json.loads(run([str(python), "-I", "-c", probe], root))
-        assert len(skills) == 8
+        assert skills == {
+            c["id"]: c["tier"] for c in components if c["type"] == "skills"
+        }
+        assert sum(tier == "core" for tier in skills.values()) == 8
         project = root / "project"
         project.mkdir()
         run([str(cli), "install", "project", str(project), "--dry-run"], root)
@@ -121,8 +131,36 @@ def verify(wheel: Path) -> None:
         assert "unresolved placeholders" in output
         assert len(list(project.glob(".github/skills/*/SKILL.md"))) == 8
         assert len(list(project.glob(".github/agents/*.agent.md"))) == 4
+        optional = [
+            c
+            for c in components
+            if c["tier"] == "extended" and c["type"] in {"skills", "prompts"}
+        ]
+        selection = [str(cli), "install", "project", str(project)]
+        for kind in ("skills", "prompts"):
+            selection.extend(
+                [
+                    "--" + kind,
+                    ",".join(c["id"] for c in optional if c["type"] == kind),
+                ]
+            )
+        run([*selection, "--dry-run"], root)
+        assert before == {
+            p: (p.read_bytes(), p.stat().st_mtime_ns)
+            for p in project.rglob("*")
+            if p.is_file()
+        }, "Optional preview changed existing files"
+        run(selection, root)
+        assert set(p for p in project.rglob("*") if p.is_file()) == before.keys() | {
+            project / c["destinations"]["project"] for c in optional
+        }
+        for path, original in before.items():
+            assert (path.read_bytes(), path.stat().st_mtime_ns) == original
+        for component in optional:
+            destination = project / component["destinations"]["project"]
+            assert destination.read_bytes() == (source / component["path"]).read_bytes()
     print(
-        "Wheel verified: exact catalog bytes, zero runtime dependencies, isolated install/init/audit, and unchanged repeat install."
+        "Wheel verified: exact catalog bytes, zero runtime dependencies, isolated install/init/audit, unchanged repeat install, and optional workflow selection."
     )
 
 

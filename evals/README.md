@@ -81,6 +81,31 @@ Do not claim the IDE loaded both solutions or that static inspection proves a
 successful build. Synthetic fixture checks validate solution references and
 project metadata, not compilation.
 
+## Manual documentation case
+
+Reuse `missing_sql` on fresh isolated copies using the comparison procedure above.
+Use ordinary Agent mode in both conditions, with no toolkit content in the
+baseline and only `source-behavior-documentation` in the second condition. Keep
+the prompt, model, permissions, and tool access identical. This is an additional
+manual scenario over the existing fixture, not a new harness or a reported result.
+
+Use this exact prompt in both sessions:
+
+> Document the observable behavior and provenance of the CashDist field,
+> including what is established from source and what remains unknown. Produce
+> a short documentation page suitable for a new maintainer. Return the page in
+> chat. Do not invent missing database logic or modify source.
+
+Assess whether the page traces the real controller, service, parameters, and
+procedure boundary with usable source references. It should explain the mapping,
+identify the absent definition or authoritative contract needed to establish the
+calculation, and avoid inventing a sum formula or financial semantics. Check
+that a maintainer can use the page without reading the investigation transcript.
+Claims ledgers, excessive boilerplate, and premature migration recommendations
+add no value to this task. Use the same scorecard below and retain unfavorable
+or inconclusive comparisons. Static content checks do not establish these
+behavioral outcomes or automatic skill loading.
+
 ## Scorecard
 
 For each response, score the following dimensions 0 (material failure),

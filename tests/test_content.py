@@ -6,7 +6,7 @@ from importlib.resources.abc import Traversable
 
 import yaml
 
-from copilot_engineering_toolkit.catalog import TYPES
+from copilot_engineering_toolkit.catalog import TYPES, Catalog
 from copilot_engineering_toolkit.resources import catalog_root
 
 CATALOG = catalog_root()
@@ -21,6 +21,18 @@ CORE_SKILLS = {
     "incident-triage",
 }
 CORE_AGENTS = {"architect", "systems-investigator", "test-engineer", "documentation"}
+EXTENDED_SKILLS = {"source-behavior-documentation", "runtime-characterization"}
+CORE_PROMPTS = {
+    "analyze-work-item",
+    "bootstrap-agents",
+    "investigate-behavior",
+    "review-change",
+}
+EXTENDED_PROMPTS = {
+    "map-undocumented-system",
+    "document-subsystem",
+    "characterize-runtime",
+}
 
 
 def frontmatter(resource: Traversable) -> tuple[dict[str, object], str]:
@@ -43,9 +55,15 @@ def descendants(resource: Traversable) -> Iterator[Traversable]:
 
 
 class ContentTests(unittest.TestCase):
-    def test_all_eight_core_skills_have_valid_native_metadata(self) -> None:
+    def test_all_core_and_extended_skills_have_valid_native_metadata(self) -> None:
         skills = list(CATALOG.joinpath("skills").iterdir())
-        self.assertEqual({item.name for item in skills}, CORE_SKILLS)
+        self.assertEqual({item.name for item in skills}, CORE_SKILLS | EXTENDED_SKILLS)
+        catalog = Catalog()
+        self.assertEqual(
+            {c.id: c.tier for c in catalog.components if c.type == "skills"},
+            dict.fromkeys(CORE_SKILLS, "core")
+            | dict.fromkeys(EXTENDED_SKILLS, "extended"),
+        )
         for folder in skills:
             with self.subTest(skill=folder.name):
                 data, _ = frontmatter(folder.joinpath("SKILL.md"))
@@ -100,18 +118,27 @@ class ContentTests(unittest.TestCase):
                 self.assertEqual(text.count("{{"), text.count("}}"))
 
     def test_task_prompts_are_packaged(self) -> None:
-        expected = {
-            "analyze-work-item",
-            "bootstrap-agents",
-            "investigate-behavior",
-            "review-change",
-        }
+        expected = CORE_PROMPTS | EXTENDED_PROMPTS
+        self.assertEqual(
+            {c.id: c.tier for c in Catalog().components if c.type == "prompts"},
+            dict.fromkeys(CORE_PROMPTS, "core")
+            | dict.fromkeys(EXTENDED_PROMPTS, "extended"),
+        )
         prompts = list(CATALOG.joinpath("prompts").iterdir())
         self.assertEqual(
             {p.name for p in prompts}, {f"{p}.prompt.md" for p in expected}
         )
         for prompt in prompts:
             self.assertTrue(prompt.read_text(encoding="utf-8").strip())
+
+    def test_core_profile_contains_only_original_agents_and_skills(self) -> None:
+        selected = Catalog().select({}, "core")
+        self.assertEqual(
+            {(c.type, c.id) for c in selected},
+            {("agents", name) for name in CORE_AGENTS}
+            | {("skills", name) for name in CORE_SKILLS},
+        )
+        self.assertEqual(len(selected), 12)
 
     def test_finished_content_has_no_scaffold_tokens(self) -> None:
         for resource in (

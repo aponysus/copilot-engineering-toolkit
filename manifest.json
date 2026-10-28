@@ -122,6 +122,26 @@
       }
     },
     {
+      "id": "runtime-characterization",
+      "type": "skills",
+      "tier": "extended",
+      "path": "skills/runtime-characterization/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/runtime-characterization/SKILL.md",
+        "user-cli": "skills/runtime-characterization/SKILL.md"
+      }
+    },
+    {
+      "id": "source-behavior-documentation",
+      "type": "skills",
+      "tier": "extended",
+      "path": "skills/source-behavior-documentation/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/source-behavior-documentation/SKILL.md",
+        "user-cli": "skills/source-behavior-documentation/SKILL.md"
+      }
+    },
+    {
       "id": "analyze-work-item",
       "type": "prompts",
       "tier": "core",
@@ -155,6 +175,33 @@
       "path": "prompts/review-change.prompt.md",
       "destinations": {
         "project": ".github/prompts/review-change.prompt.md"
+      }
+    },
+    {
+      "id": "characterize-runtime",
+      "type": "prompts",
+      "tier": "extended",
+      "path": "prompts/characterize-runtime.prompt.md",
+      "destinations": {
+        "project": ".github/prompts/characterize-runtime.prompt.md"
+      }
+    },
+    {
+      "id": "document-subsystem",
+      "type": "prompts",
+      "tier": "extended",
+      "path": "prompts/document-subsystem.prompt.md",
+      "destinations": {
+        "project": ".github/prompts/document-subsystem.prompt.md"
+      }
+    },
+    {
+      "id": "map-undocumented-system",
+      "type": "prompts",
+      "tier": "extended",
+      "path": "prompts/map-undocumented-system.prompt.md",
+      "destinations": {
+        "project": ".github/prompts/map-undocumented-system.prompt.md"
       }
     },
     {

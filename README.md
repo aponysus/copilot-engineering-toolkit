@@ -75,7 +75,7 @@ copilot-toolkit init /work/my-project --template dotnet --dry-run
 Replace the target with your existing project directory, for example
 `"C:\work\my-project"` on Windows. `init` is separate: remove `--dry-run` only when
 you want to create the scaffold. Component installation does not rewrite `AGENTS.md`.
-The full collection is available with explicit `--profile core`, or by manually
+The core collection is available with explicit `--profile core`, or by manually
 copying the four agent files and eight skill folders linked below.
 
 ## Browse the collection
@@ -86,7 +86,7 @@ implementation; specialist roles do not require a fixed sequence of steps.
 | Content | Canonical files |
 | --- | --- |
 | Agents | [Architect](agents/architect.agent.md), [Systems Investigator](agents/systems-investigator.agent.md), [Test Engineer](agents/test-engineer.agent.md), [Documentation](agents/documentation.agent.md) |
-| Prompts | [Four task launchers](prompts/) |
+| Prompts | [Reusable task launchers](prompts/) |
 | Shared guidance | [Engineering baseline](global/engineering.md), [optional personal preferences](global/preferences-optional.md) |
 | Language instructions | [Opt-in C#, SQL, Python, and Go guidance](instructions/) |
 
@@ -103,7 +103,19 @@ All eight core skills remain available:
 
 These top-level folders are the canonical content. Package builds bundle them
 automatically, so manual copies and CLI installations use the same files.
-No extended agents or skills are included.
+
+## Optional: document an unfamiliar system
+
+The [undocumented-system workflow](docs/workflows/undocumented-system-discovery.md)
+walks through scoped source reconnaissance, writing maintainable documentation,
+and later controlled runtime experiments. It uses the existing agents with
+[source-behavior-documentation](skills/source-behavior-documentation/SKILL.md) and
+[runtime-characterization](skills/runtime-characterization/SKILL.md), plus the
+[map](prompts/map-undocumented-system.prompt.md),
+[document](prompts/document-subsystem.prompt.md), and
+[characterize](prompts/characterize-runtime.prompt.md) task prompts.
+Manual copying is sufficient. These extended components require explicit
+selection and are not included in starter or core.
 
 ## Advanced: optional CLI
 
