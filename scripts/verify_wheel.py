@@ -84,13 +84,21 @@ def verify(wheel: Path) -> None:
         run([str(cli), "install", "project", str(project), "--dry-run"], root)
         assert not list(project.iterdir()), "Dry-run created files"
         run([str(cli), "install", "project", str(project)], root)
+        assert {
+            p.relative_to(project).as_posix() for p in project.rglob("*") if p.is_file()
+        } == {
+            ".github/agents/systems-investigator.agent.md",
+            ".github/skills/work-item-analysis/SKILL.md",
+            ".github/skills/change-impact-analysis/SKILL.md",
+        }, "Default installation must contain only the starter"
+        run([str(cli), "install", "project", str(project), "--profile", "core"], root)
         run([str(cli), "init", str(project), "--template", "dotnet"], root)
         before = {
             p: (p.read_bytes(), p.stat().st_mtime_ns)
             for p in project.rglob("*")
             if p.is_file()
         }
-        run([str(cli), "install", "project", str(project)], root)
+        run([str(cli), "install", "project", str(project), "--profile", "core"], root)
         assert before == {
             p: (p.read_bytes(), p.stat().st_mtime_ns)
             for p in project.rglob("*")

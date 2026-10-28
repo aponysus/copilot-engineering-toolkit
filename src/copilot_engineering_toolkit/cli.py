@@ -63,8 +63,8 @@ def parser() -> argparse.ArgumentParser:
                 _write_options(child)
                 child.add_argument(
                     "--profile",
-                    choices=("core",),
-                    help="four core agents and eight skills only",
+                    choices=("starter", "core"),
+                    help="starter: Systems Investigator and two analysis skills (default without selections); core: all four agents and eight skills",
                 )
                 for kind in ("agents", "skills", "prompts", "instructions", "global"):
                     if scope == "project" and kind == "global":

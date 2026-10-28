@@ -1,6 +1,8 @@
 # Installer usage and safety
 
-`copilot-toolkit` reads one packaged catalog and performs local operations only.
+For a first installation, use the [manual quick start](../README.md#quick-start-copy-one-agent-and-skill).
+The optional `copilot-toolkit` CLI helps repeat users install selected content
+across projects. It reads one packaged catalog and performs local operations only.
 It does not authenticate, download content, execute Copilot, or change remotes.
 Python 3.11+ is required; there are no runtime dependencies. From an uninstalled
 clone, change to `src/` and use `python -B -m copilot_engineering_toolkit` in place
@@ -12,17 +14,22 @@ of `copilot-toolkit`. The `-B` option avoids Python bytecode cache writes.
 copilot-toolkit catalog
 copilot-toolkit catalog --type skills
 copilot-toolkit paths --surface cli
-copilot-toolkit install user --surface cli --profile core --dry-run
+copilot-toolkit install user --surface cli --profile starter --dry-run
 copilot-toolkit install project /work/example --skills work-item-analysis,test-design --agents systems-investigator --dry-run
 copilot-toolkit install project /work/example --prompts analyze-work-item --instructions python,project-context --dry-run
 ```
 
 Replace `/work/example` with an existing directory, or a quoted Windows path
 such as `"C:\work\example"`. Paths must be direct and must not contain `..`.
-The core profile selects only core agents and skills. With no selection flags,
-it is the default. Explicit component flags select only those components unless
-you also pass `--profile core`. Comma-separated IDs must be nonempty and valid;
+With no selection flags, the starter profile installs only Systems Investigator,
+`work-item-analysis`, and `change-impact-analysis`. Select `--profile core`
+explicitly for all four agents and eight skills. Explicit component flags select
+only those components unless you also pass a profile; then they add to that
+profile, without duplicates. Comma-separated IDs must be nonempty and valid;
 `catalog` lists IDs qualified by type, tier, and permitted destinations.
+
+Earlier versions defaulted to core. Existing installations are left intact;
+switching profiles does not remove previously installed components.
 
 Prompts and path instructions are project-only. `--instructions project-context`
 creates the small `.github/copilot-instructions.md` bridge. Templates are used
@@ -34,7 +41,7 @@ Skills include their supporting files, preserving relative locations.
 ```sh
 copilot-toolkit install user --surface cli --global engineering --dry-run
 copilot-toolkit install user --surface cli --global engineering,preferences-optional --dry-run
-copilot-toolkit install user --surface cli --home /work/test-copilot --profile core --dry-run
+copilot-toolkit install user --surface cli --home /work/test-copilot --profile starter --dry-run
 copilot-toolkit install user --surface jetbrains --global engineering --global-path /work/ide/global-copilot-instructions.md --dry-run
 ```
 
@@ -70,6 +77,11 @@ placeholders. Existing project instructions remain authoritative; preview any
 intentional replacement and keep useful local content.
 
 ## Writes, conflicts, and recovery
+
+To update copied toolkit content, obtain a reviewed newer checkout or wheel and
+repeat the same selections with `--dry-run`. Compare changes before applying
+them. Keep custom project facts in project-owned instructions; there is no
+automatic update or merge process.
 
 Every operation preflights all sources and destinations. Dry-run prints unified
 diffs and creates no directories, files, or backups. Identical bytes are a no-op,

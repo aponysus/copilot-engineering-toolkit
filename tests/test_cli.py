@@ -59,7 +59,14 @@ class CLITests(unittest.TestCase):
         global_file = self.root / "copilot-instructions.md"
         global_file.write_bytes(b"my preferences")
         code, _, err = self.run_cli(
-            "install", "user", "--surface", "cli", "--home", self.root
+            "install",
+            "user",
+            "--surface",
+            "cli",
+            "--home",
+            self.root,
+            "--profile",
+            "core",
         )
         self.assertEqual(code, 0, err)
         self.assertEqual(global_file.read_bytes(), b"my preferences")

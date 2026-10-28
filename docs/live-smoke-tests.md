@@ -39,13 +39,43 @@ Use the active version's controls; record unsupported features instead of
 inventing equivalent results. Do not change organization policy or authentication
 configuration to bypass an unavailable feature.
 
-## JetBrains
+## Rider and other JetBrains IDEs
 
-Open the same copied fixture root. Record IDE name/version, Copilot plugin
-version, and selected harness. Inspect the IDE's Copilot Customizations controls,
-confirm the repository instruction file and agent selection, then repeat the
-file-reading and skill-loading checks above. Test a copied prompt file when
-supported; record copy/paste fallback separately from native prompt discovery.
+This check needs no Python and no real-task comparison. Copy
+`evals/fixtures/api_consumers/` to a temporary folder outside the toolkit checkout.
+From the catalog, manually copy `systems-investigator.agent.md` to
+`.github/agents/` and the entire `work-item-analysis/` and
+`change-impact-analysis/` skill folders to `.github/skills/` in that temporary root.
+Copy `instructions/project-context.md` as `.github/copilot-instructions.md`.
+Create `AGENTS.md` there containing:
+
+```markdown
+# Copper Finch
+
+This synthetic application's name is Copper Finch.
+```
+
+1. Open that root in Rider. Record the IDE and Copilot plugin versions and the
+   selected harness. Use the IDE's Copilot Customizations controls to inspect
+   the repository instructions. Start a fresh session.
+2. Confirm Systems Investigator appears in the agent selector, then select it.
+3. Ask: “What is this application's name according to AGENTS.md? Read service.py
+   and identify both consumers of the count field. Cite their source locations.
+   Do not edit files.” Verify the name, `dashboard`, and `export_row` against the
+   source. This checks repository context and source access independently of
+   whether the skill is available.
+4. Ask: “Use work-item-analysis and change-impact-analysis to assess renaming
+   count to item_count. Do not edit files.” Inspect any client-provided loading
+   indicators or tool traces for each skill. Record unavailable evidence as
+   unverified, even if the response says it used the skills.
+5. Check that the source files were not changed. Record agent discovery, source
+   access, repository-instruction loading, and skill loading separately. A
+   successful answer does not prove every discovery mechanism worked.
+
+If a feature is unavailable, record the limitation and try pasted Markdown only
+as a separately identified fallback. There is no need to alter global settings
+or install the Python CLI for this check. Test a copied prompt file separately
+when your plugin supports it.
 
 For .NET onboarding, open the intended solution explicitly and record which
 solution and SDK the IDE uses. Directory visibility does not prove semantic

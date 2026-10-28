@@ -11,6 +11,10 @@ from pathlib import PurePosixPath, PureWindowsPath
 from .errors import ToolkitError
 
 TYPES = ("agents", "skills", "prompts", "instructions", "templates", "global")
+STARTER = {
+    "agents": ["systems-investigator"],
+    "skills": ["work-item-analysis", "change-impact-analysis"],
+}
 
 
 def safe_relative(value: str) -> str:
@@ -139,7 +143,11 @@ class Catalog:
         self, selections: dict[str, list[str]], profile: str | None = None
     ) -> list[Component]:
         chosen = []
-        if profile == "core" or (profile is None and not selections):
+        if profile not in (None, "starter", "core"):
+            raise ToolkitError(f"Unknown profile: {profile!r}; choose starter or core")
+        if profile == "starter" or (profile is None and not selections):
+            chosen = self.select(STARTER)
+        elif profile == "core":
             chosen = [
                 c
                 for c in self.components
@@ -157,5 +165,7 @@ class Catalog:
                 if matches[0] not in chosen:
                     chosen.append(matches[0])
         if not chosen:
-            raise ToolkitError("Empty selection; choose components or --profile core")
+            raise ToolkitError(
+                "Empty selection; choose components or --profile starter"
+            )
         return chosen
