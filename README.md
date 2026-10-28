@@ -4,9 +4,36 @@ Reusable engineering instructions, agents, skills, and project scaffolds for
 GitHub Copilot CLI and JetBrains. Use them to understand unfamiliar code, scope
 changes, preserve contracts, and design meaningful verification.
 
-The library is usable by manual copying. An installer and audit CLI are not yet
-available. No Python runtime is needed to use the Markdown files. This is an
-independent project with no employer or GitHub sponsorship claimed.
+Use the library by manual copying or with the optional Python 3.11+ installer.
+Installation and audit commands work offline without runtime dependencies.
+No Python runtime is needed to use the Markdown files. This is an independent
+project with no employer or GitHub sponsorship claimed.
+
+## Install with a preview
+
+From a local clone, install the CLI into your Python environment and preview
+changes to an **existing** project directory (replace `/work/my-project`):
+
+```sh
+python -m pip install .
+copilot-toolkit install project /work/my-project --profile core --dry-run
+copilot-toolkit install project /work/my-project --profile core
+copilot-toolkit init /work/my-project --template base --dry-run
+copilot-toolkit audit project /work/my-project
+```
+
+Use a direct path without `..` segments, such as `/work/my-project` or
+`C:\work\my-project`, in the examples above.
+The core profile installs four agents and eight skills; it does not change
+global preferences or `AGENTS.md`. Run `init` without `--dry-run` to create an
+incomplete scaffold, then specialize it from repository evidence.
+
+Package building may download build tooling. For a fully offline start, run
+`python -B -m copilot_engineering_toolkit catalog` from the clone's `src/` directory;
+replace `catalog` with any command below. Alternatively install a local wheel
+using `python -m pip install --no-index --no-deps path/to/toolkit.whl` with its
+actual filename. See [installer usage and safety](docs/installer.md) for user
+installation, selection, backups, and exit codes.
 
 ## Start with one agent and skill
 
@@ -41,6 +68,7 @@ All paths below are under the [canonical catalog](src/copilot_engineering_toolki
 | Engineering baseline | `global/engineering.md` | Optional shared engineering expectations |
 | Personal preferences | `global/preferences-optional.md` | Optional, editable communication style |
 | Path instructions | C#, SQL, Python, Go | Opt-in language guidance |
+| Project context | `instructions/project-context.md` | Optional small Copilot bridge to project-owned instructions |
 
 The eight core skills are:
 
@@ -78,7 +106,7 @@ python -m unittest discover -s tests -v
 python -m pip wheel --no-deps . --wheel-dir dist
 ```
 
-Tests check content structure and packaged resources, not model behavior.
+Tests check catalog structure, installer safety, and static audit behavior, not model behavior.
 Keep all distributable content in the catalog; do not add duplicate exports.
 See [contributing](CONTRIBUTING.md) for content conventions.
 

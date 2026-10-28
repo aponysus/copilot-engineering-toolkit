@@ -11,6 +11,7 @@ before any replacement; copied content becomes user-owned.
 | Prompts | `.github/prompts/<name>.prompt.md` | Use copy/paste fallback |
 | Path instructions | `.github/instructions/<name>.instructions.md` | Select project scope for this library |
 | Project scaffold | `AGENTS.md` | Not applicable |
+| Project context bridge | `.github/copilot-instructions.md` | Not applicable |
 | Shared baseline/preferences | Deliberately integrate with existing instructions | `~/.copilot/copilot-instructions.md` |
 
 Here `~` means the user's home directory, including on Windows. CLI configuration
@@ -33,6 +34,14 @@ assume that it reads CLI personal folders. See [JetBrains instructions](https://
 and the [feature matrix](https://docs.github.com/en/copilot/reference/copilot-feature-matrix).
 When a feature is unavailable, paste the selected prompt or skill into the chat;
 this does not establish automatic discovery.
+
+The installer resolves macOS global instructions to
+`~/.config/github-copilot/intellij/global-copilot-instructions.md` and Windows to
+`%LOCALAPPDATA%\github-copilot\intellij\global-copilot-instructions.md`.
+The JetBrains documentation does not specify Linux here, so Linux requires an
+explicit `--global-path`. This file selection does not prove IDE loading.
+Path-specific instruction support also varies by host; copying a file is not a
+claim that every JetBrains version applies its globs.
 
 ## Format decisions
 

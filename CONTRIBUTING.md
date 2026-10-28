@@ -5,6 +5,13 @@ define distinct roles; skills define reusable methods; prompts launch tasks;
 templates contain conspicuous placeholders. Avoid duplicating whole methods
 inside agents or broad policies inside every file.
 
+Register each component in `catalog/manifest.json` with its type-qualified ID,
+tier, canonical source, and permitted destinations. Core-profile selection covers
+core agents and skills only; other content requires explicit selection. Keep
+installation mappings declarative so adding a skill needs no installer change.
+Skill folders may contain supporting resources; the installer copies them as a
+unit. Runtime code uses the standard library; PyYAML is a test dependency only.
+
 A useful skill has a discriminating description, evidence to inspect, a method
 that changes decisions, a proportional output, and a stopping condition for
 missing authority. Keep it usable without a particular specialist or connector.

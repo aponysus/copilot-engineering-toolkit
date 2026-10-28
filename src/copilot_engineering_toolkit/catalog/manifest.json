@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "components": [
+    {
+      "id": "architect",
+      "type": "agents",
+      "tier": "core",
+      "path": "agents/architect.agent.md",
+      "destinations": {
+        "project": ".github/agents/architect.agent.md",
+        "user-cli": "agents/architect.agent.md"
+      }
+    },
+    {
+      "id": "documentation",
+      "type": "agents",
+      "tier": "core",
+      "path": "agents/documentation.agent.md",
+      "destinations": {
+        "project": ".github/agents/documentation.agent.md",
+        "user-cli": "agents/documentation.agent.md"
+      }
+    },
+    {
+      "id": "systems-investigator",
+      "type": "agents",
+      "tier": "core",
+      "path": "agents/systems-investigator.agent.md",
+      "destinations": {
+        "project": ".github/agents/systems-investigator.agent.md",
+        "user-cli": "agents/systems-investigator.agent.md"
+      }
+    },
+    {
+      "id": "test-engineer",
+      "type": "agents",
+      "tier": "core",
+      "path": "agents/test-engineer.agent.md",
+      "destinations": {
+        "project": ".github/agents/test-engineer.agent.md",
+        "user-cli": "agents/test-engineer.agent.md"
+      }
+    },
+    {
+      "id": "api-contract-evolution",
+      "type": "skills",
+      "tier": "core",
+      "path": "skills/api-contract-evolution/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/api-contract-evolution/SKILL.md",
+        "user-cli": "skills/api-contract-evolution/SKILL.md"
+      }
+    },
+    {
+      "id": "change-impact-analysis",
+      "type": "skills",
+      "tier": "core",
+      "path": "skills/change-impact-analysis/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/change-impact-analysis/SKILL.md",
+        "user-cli": "skills/change-impact-analysis/SKILL.md"
+      }
+    },
+    {
+      "id": "database-change-safety",
+      "type": "skills",
+      "tier": "core",
+      "path": "skills/database-change-safety/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/database-change-safety/SKILL.md",
+        "user-cli": "skills/database-change-safety/SKILL.md"
+      }
+    },
+    {
+      "id": "incident-triage",
+      "type": "skills",
+      "tier": "core",
+      "path": "skills/incident-triage/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/incident-triage/SKILL.md",
+        "user-cli": "skills/incident-triage/SKILL.md"
+      }
+    },
+    {
+      "id": "legacy-contract-analysis",
+      "type": "skills",
+      "tier": "core",
+      "path": "skills/legacy-contract-analysis/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/legacy-contract-analysis/SKILL.md",
+        "user-cli": "skills/legacy-contract-analysis/SKILL.md"
+      }
+    },
+    {
+      "id": "repository-onboarding",
+      "type": "skills",
+      "tier": "core",
+      "path": "skills/repository-onboarding/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/repository-onboarding/SKILL.md",
+        "user-cli": "skills/repository-onboarding/SKILL.md"
+      }
+    },
+    {
+      "id": "test-design",
+      "type": "skills",
+      "tier": "core",
+      "path": "skills/test-design/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/test-design/SKILL.md",
+        "user-cli": "skills/test-design/SKILL.md"
+      }
+    },
+    {
+      "id": "work-item-analysis",
+      "type": "skills",
+      "tier": "core",
+      "path": "skills/work-item-analysis/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/work-item-analysis/SKILL.md",
+        "user-cli": "skills/work-item-analysis/SKILL.md"
+      }
+    },
+    {
+      "id": "analyze-work-item",
+      "type": "prompts",
+      "tier": "core",
+      "path": "prompts/analyze-work-item.prompt.md",
+      "destinations": {
+        "project": ".github/prompts/analyze-work-item.prompt.md"
+      }
+    },
+    {
+      "id": "bootstrap-agents",
+      "type": "prompts",
+      "tier": "core",
+      "path": "prompts/bootstrap-agents.prompt.md",
+      "destinations": {
+        "project": ".github/prompts/bootstrap-agents.prompt.md"
+      }
+    },
+    {
+      "id": "investigate-behavior",
+      "type": "prompts",
+      "tier": "core",
+      "path": "prompts/investigate-behavior.prompt.md",
+      "destinations": {
+        "project": ".github/prompts/investigate-behavior.prompt.md"
+      }
+    },
+    {
+      "id": "review-change",
+      "type": "prompts",
+      "tier": "core",
+      "path": "prompts/review-change.prompt.md",
+      "destinations": {
+        "project": ".github/prompts/review-change.prompt.md"
+      }
+    },
+    {
+      "id": "csharp",
+      "type": "instructions",
+      "tier": "extended",
+      "path": "instructions/csharp.instructions.md",
+      "destinations": {
+        "project": ".github/instructions/csharp.instructions.md"
+      }
+    },
+    {
+      "id": "go",
+      "type": "instructions",
+      "tier": "extended",
+      "path": "instructions/go.instructions.md",
+      "destinations": {
+        "project": ".github/instructions/go.instructions.md"
+      }
+    },
+    {
+      "id": "python",
+      "type": "instructions",
+      "tier": "extended",
+      "path": "instructions/python.instructions.md",
+      "destinations": {
+        "project": ".github/instructions/python.instructions.md"
+      }
+    },
+    {
+      "id": "sql",
+      "type": "instructions",
+      "tier": "extended",
+      "path": "instructions/sql.instructions.md",
+      "destinations": {
+        "project": ".github/instructions/sql.instructions.md"
+      }
+    },
+    {
+      "id": "base",
+      "type": "templates",
+      "tier": "core",
+      "path": "templates/base/AGENTS.md.tmpl",
+      "destinations": {
+        "init": "AGENTS.md"
+      }
+    },
+    {
+      "id": "dotnet",
+      "type": "templates",
+      "tier": "core",
+      "path": "templates/dotnet/AGENTS.md.tmpl",
+      "destinations": {
+        "init": "AGENTS.md"
+      }
+    },
+    {
+      "id": "go",
+      "type": "templates",
+      "tier": "core",
+      "path": "templates/go/AGENTS.md.tmpl",
+      "destinations": {
+        "init": "AGENTS.md"
+      }
+    },
+    {
+      "id": "python",
+      "type": "templates",
+      "tier": "core",
+      "path": "templates/python/AGENTS.md.tmpl",
+      "destinations": {
+        "init": "AGENTS.md"
+      }
+    },
+    {
+      "id": "engineering",
+      "type": "global",
+      "tier": "core",
+      "path": "global/engineering.md",
+      "destinations": {
+        "user-cli": "copilot-instructions.md",
+        "user-jetbrains": "global-copilot-instructions.md"
+      }
+    },
+    {
+      "id": "preferences-optional",
+      "type": "global",
+      "tier": "extended",
+      "path": "global/preferences-optional.md",
+      "destinations": {
+        "user-cli": "copilot-instructions.md",
+        "user-jetbrains": "global-copilot-instructions.md"
+      }
+    },
+    {
+      "id": "project-context",
+      "type": "instructions",
+      "tier": "extended",
+      "path": "instructions/project-context.md",
+      "destinations": {
+        "project": ".github/copilot-instructions.md"
+      }
+    }
+  ]
+}
