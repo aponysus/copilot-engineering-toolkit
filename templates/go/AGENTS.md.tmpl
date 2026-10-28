@@ -1,7 +1,8 @@
 # {{PROJECT_NAME}}
 
-> Incomplete scaffold. Populate from repository evidence and maintainer input;
-> remove irrelevant entries. Copying this file does not verify any project fact.
+> Opinionated Go scaffold. Keep the defaults you adopt, reconcile them with
+> existing project configuration, and fill in the project-specific placeholders.
+> Copying this file does not install tools, create modules, or verify commands.
 
 ## Purpose and boundaries
 
@@ -27,14 +28,72 @@
 - Repository conventions: {{NON_OBVIOUS_CONVENTIONS}}
 - Runtime/deployment/platform constraints: {{ENVIRONMENT_AND_AUTHORIZATION_BOUNDARIES}}
 
+Use Go modules and the standard Go toolchain. Derive supported versions from
+`go.mod` and CI; keep any `toolchain` directive consistent with that policy.
+Commit module metadata and dependency checksums when present. Review `go.mod`
+and `go.sum` changes together, and run `go mod tidy` deliberately after dependency
+changes rather than making it an automatic pre-test mutation.
+
+Prefer standard-library-only core packages. Keep third-party transport and
+telemetry dependencies at integration boundaries; use separate modules when
+consumers need dependency or release isolation. Do not split a small project
+into multiple modules without that need. Keep package responsibilities narrow,
+public facades thin, and interfaces small and driven by callers. Avoid generic
+frameworks or registries without concrete extension requirements.
+Document exported identifiers with Go doc comments that explain useful behavior,
+including zero values, ownership, concurrency guarantees, and errors where relevant.
+
+Use gofmt for formatting and the standard `testing` package for tests and
+benchmarks. Use `go vet` and Staticcheck for analysis and govulncheck for
+vulnerability checks. Pin external tool versions compatible with the project's
+Go version in reusable tooling or CI; avoid unversioned `@latest` checks in CI.
+Preserve existing Makefile targets when they implement these commands; only
+document targets that actually exist.
+
 ## Development commands
 
-Run from {{COMMAND_WORKING_DIRECTORY}} with {{PREREQUISITES}}.
+Run from {{COMMAND_WORKING_DIRECTORY}} with the supported Go toolchain.
+Additional prerequisites: {{PREREQUISITES}}.
 
-- Install: `{{INSTALL_COMMAND}}`
-- Build: `{{BUILD_COMMAND_OR_REMOVE}}`
-- Test: `{{TEST_COMMAND}}`
-- Lint/type check: `{{CHECK_COMMANDS_OR_REMOVE}}`
+For a new module, choose its real import path before running `go mod init`.
+For an existing module, use its checked-in metadata. Routine commands from each
+module root are:
+
+```sh
+go mod download
+go build ./...
+go test ./...
+go vet ./...
+gofmt -l .
+```
+
+`gofmt -l .` reports files needing formatting; output must be empty for a clean
+check, and its exit code alone does not enforce that. Apply formatting to changed
+files with `gofmt -w path/to/file.go`. Do not reformat generated or vendored code.
+For the inner loop, use `go test ./path/to/package -run TestName -count=1`.
+
+Use these additional checks when relevant:
+
+- Concurrency changes: `go test -race ./...` on a supported platform with the
+  required C toolchain and cgo enabled.
+- Coverage inspection: `go test ./... -coverprofile=coverage.out -covermode=atomic`.
+- Performance-sensitive changes: `go test ./path/to/package -run '^$' -bench . -benchmem`;
+  compare against a baseline under the same conditions.
+- Static analysis: `go run honnef.co/go/tools/cmd/staticcheck@{{STATICCHECK_VERSION}} ./...`.
+- Vulnerability analysis: `go run golang.org/x/vuln/cmd/govulncheck@{{GOVULNCHECK_VERSION}} ./...`.
+
+Replace tool-version placeholders with compatible pinned releases before use.
+Tool downloads and vulnerability database queries need network access unless
+already supplied locally; vulnerability findings can change without source edits.
+
+- Project-specific test invocation, if needed: `{{TEST_COMMAND}}`
+- Aggregate local/CI command, if present: {{AGGREGATE_CHECK_COMMAND_OR_REMOVE}}
+- Runnable applications and examples: {{BUILD_OR_RUN_COMMANDS_OR_REMOVE}}
+
+Root `./...` checks do not automatically cover nested modules. List module roots
+and run the applicable build, test, and analysis commands in each. If using
+`go.work` or local replacements, also verify separately released modules against
+their declared dependencies so workspace wiring does not hide missing requirements.
 
 Distinguish commands found in configuration from commands actually run. Record
 material environmental limits; never label an unrun command as verified.
@@ -44,6 +103,19 @@ material environmental limits; never label an unrun command as verified.
 - Behavior and integration checks: {{CONTRACTS_AND_FOCUSED_CHECKS}}
 - Unavailable dependencies: {{UNVERIFIED_BOUNDARIES_OR_REMOVE}}
 - Authoritative documentation: {{DOCS_TO_UPDATE_WITH_BEHAVIOR}}
+
+Use table-driven tests when cases share a contract, and regression tests for
+observable failures. Use `t.TempDir`, `t.Cleanup`, local test servers, and explicit
+synchronization instead of live dependencies or sleeps as proof of ordering.
+Test cancellation, deadlines, concurrent access, and cleanup when relevant.
+Race checks complement assertions; a passing run is not proof of all schedules.
+Use fuzz tests for parsers and boundary-heavy inputs when they add useful coverage.
+
+Keep public examples compiling and use executable examples for API usage when
+appropriate. Preserve exported APIs, error semantics, and wire formats under the
+project's compatibility policy. Update maintained docs and generated references
+with behavior changes, using existing generation commands. Run checks proportional
+to the change and report actual results and unsupported environments.
 
 Maintain project facts here after specialization. Preserve headings, section order,
 and unrelated content. Subsequent instruction changes require explicit user
@@ -55,8 +127,17 @@ authorization for enduring requirements; do not record task progress here.
 - Package ownership and exported contracts: {{PACKAGE_MAP_AND_COMPATIBILITY}}
 - Cancellation propagation: {{CONTEXT_BOUNDARIES}}
 - Goroutine/channel and resource ownership: {{LIFECYCLE_AND_CLEANUP_INVARIANTS}}
-- Formatting and tests: {{GOFMT_AND_REPOSITORY_TEST_COMMANDS}}
-- Race checks and platform limits: {{RACE_TEST_COMMAND_AND_SUPPORTED_ENVIRONMENT}}
+- Race-check platform requirements: {{RACE_TEST_SUPPORTED_ENVIRONMENT}}
+- Exceptions to the defaults above: {{PROJECT_TOOLING_EXCEPTIONS_OR_REMOVE}}
 
-Derive conventions from this module. Use deterministic concurrency checks and
-report whether relevant race tests were executed in a supported environment.
+Accept and propagate `context.Context` across blocking work. Give each goroutine,
+channel, timer, and resource a clear owner and shutdown path; bound concurrency
+and release resources on every return path. Preserve error identity when wrapping
+and use `errors.Is` or `errors.As` for classification. Avoid panic for expected
+operational failures and broad recovery that conceals defects.
+
+Make retry safety, idempotency, and resource limits explicit where applicable.
+Keep telemetry structured, optional for library consumers, and low-cardinality;
+do not put request IDs or other unbounded values into metric labels or policy keys.
+Keep observability adapters separate from core logic and test event semantics
+when callers depend on them.

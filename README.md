@@ -52,6 +52,12 @@ existing instructions. Use the [bootstrap prompt](prompts/bootstrap-agents.promp
 to fill it from repository evidence. Placeholders are not verified facts.
 The resulting instructions belong to the project and are never synchronized.
 
+The Python and Go templates include opinionated tooling, environment, and
+verification defaults. Python uses uv, pytest, isort, Ruff, and Black; Go favors
+the standard toolchain, a standard-library-first core, and explicit module checks.
+Review these defaults against an existing project's conventions. Templates create
+instructions only; follow their setup guidance to configure the actual tools.
+
 For Copilot-specific context, optionally copy
 [project-context.md](instructions/project-context.md)
 as `.github/copilot-instructions.md`. Compare with existing rules first.

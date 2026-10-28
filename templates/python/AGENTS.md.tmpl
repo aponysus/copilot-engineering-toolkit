@@ -1,7 +1,9 @@
 # {{PROJECT_NAME}}
 
-> Incomplete scaffold. Populate from repository evidence and maintainer input;
-> remove irrelevant entries. Copying this file does not verify any project fact.
+> Opinionated Python scaffold. Keep the defaults you adopt, reconcile them with
+> existing project configuration, and fill in the project-specific placeholders.
+> Copying this file does not install tools or verify commands. An existing
+> project's toolchain is not migrated just by selecting this template.
 
 ## Purpose and boundaries
 
@@ -27,14 +29,61 @@
 - Repository conventions: {{NON_OBVIOUS_CONVENTIONS}}
 - Runtime/deployment/platform constraints: {{ENVIRONMENT_AND_AUTHORIZATION_BOUNDARIES}}
 
+Use uv for dependency and environment management, pytest for tests, isort for
+imports, Ruff for linting, and Black for formatting. Keep configuration in
+`pyproject.toml` and commit `uv.lock`. Use a project-local `.venv`, exclude it from
+version control, and run tools through `uv run`. Declare runtime dependencies
+separately from development tools; do not depend on globally installed packages.
+
+Set `requires-python` to the supported interpreter range and keep any
+`.python-version`, formatter targets, and CI versions consistent with it. Pin
+the development interpreter deliberately without narrowing library support
+accidentally. Review dependency changes and their lockfile diff together.
+
+Configure isort with its Black profile and the same line length as Black
+(default 88). Let isort own import sorting, Black own formatting, and Ruff own
+linting; avoid enabling competing formatting or import rules. Use type hints
+throughout, built-in generics such as `list[str]`, and explicit return types.
+Use Google-style docstrings for public APIs and non-obvious contracts, including
+errors and side effects. Ruff is not a static type checker; preserve an existing
+type checker and record its command if the project uses one.
+
 ## Development commands
 
-Run from {{COMMAND_WORKING_DIRECTORY}} with {{PREREQUISITES}}.
+Run from {{COMMAND_WORKING_DIRECTORY}} with uv and a supported Python interpreter.
+Additional prerequisites: {{PREREQUISITES}}.
 
-- Install: `{{INSTALL_COMMAND}}`
-- Build: `{{BUILD_COMMAND_OR_REMOVE}}`
-- Test: `{{TEST_COMMAND}}`
-- Lint/type check: `{{CHECK_COMMANDS_OR_REMOVE}}`
+When adopting these defaults into a project with `pyproject.toml`, add missing
+development tools with `uv add --dev pytest isort ruff black`. This updates the
+configuration and lockfile; it is setup work, not a recurring verification step.
+For a new project, initialize its metadata first and choose whether it is an
+application or a distributable package. Preserve an existing build backend.
+
+Routine commands after configuration and lockfile creation:
+
+```sh
+uv sync --locked
+uv run --locked pytest
+uv run --locked ruff check .
+uv run --locked isort --check-only .
+uv run --locked black --check .
+```
+
+Apply formatting with `uv run --locked isort .` followed by
+`uv run --locked black .`. Configure exclusions so generated code, vendored
+files, and virtual environments are outside these checks. Use
+`uv run --locked pytest path/to/test_file.py -k case_name` for a focused test.
+
+- Project-specific test invocation, if needed: `{{TEST_COMMAND}}`
+- Static type check or additional checks: `{{CHECK_COMMANDS_OR_REMOVE}}`
+- Application entry point: {{RUN_COMMAND_OR_REMOVE}}
+
+Use `uv add` and `uv remove` to change dependencies. Use a deliberate lockfile
+update for upgrades; normal checks use `--locked` so they do not silently resolve
+new versions. `uv run` handles the project environment; a separate
+`python -m pip install .` step and an installed pip module are unnecessary.
+For a distributable package with a configured build backend, use `uv build` and
+verify the resulting wheel in an isolated environment outside the checkout.
 
 Distinguish commands found in configuration from commands actually run. Record
 material environmental limits; never label an unrun command as verified.
@@ -45,6 +94,19 @@ material environmental limits; never label an unrun command as verified.
 - Unavailable dependencies: {{UNVERIFIED_BOUNDARIES_OR_REMOVE}}
 - Authoritative documentation: {{DOCS_TO_UPDATE_WITH_BEHAVIOR}}
 
+Write pytest tests around observable behavior, compatibility, and failure modes.
+Use fixtures, parametrization, temporary directories, and controlled dependency
+substitutes where they clarify the contract. Keep unit tests independent of
+credentials, live services, wall-clock timing, and the developer's home directory.
+Make integration-test dependencies and invocation explicit. Exercise cleanup,
+cancellation, and partial failure where relevant; do not assert private details
+merely to increase coverage.
+
+Run focused checks during development, then the relevant project checks. Keep CI
+and local commands aligned. Once those pass, repeat or expand verification only
+for new changes or unresolved concerns. Update examples and public documentation
+when behavior changes; report checks actually run and material limits.
+
 Maintain project facts here after specialization. Preserve headings, section order,
 and unrelated content. Subsequent instruction changes require explicit user
 authorization for enduring requirements; do not record task progress here.
@@ -52,11 +114,14 @@ authorization for enduring requirements; do not record task progress here.
 ## Python context
 
 - Supported interpreters: {{PYTHON_VERSIONS_FROM_PROJECT_CONFIG}}
-- Dependency tooling and lockfiles: {{MANAGER_LOCKFILES_AND_ENVIRONMENT_SETUP}}
 - Package/import layout: {{SOURCE_LAYOUT_AND_PUBLIC_API}}
-- Type, lint, and test conventions: {{EXISTING_TOOLS_AND_COMMANDS}}
 - Import-time behavior constraints: {{IMPORT_IO_AND_INITIALIZATION_BOUNDARIES}}
 - Distribution/runtime compatibility: {{PACKAGING_AND_DEPLOYMENT_CONSTRAINTS}}
+- Exceptions to the defaults above: {{PROJECT_TOOLING_EXCEPTIONS_OR_REMOVE}}
 
-Use the project's tools; no dependency manager or test framework is assumed.
-Verify library behavior from an installed package when distribution is relevant.
+Prefer a `src/` layout for new distributable packages and a separate `tests/`
+directory; preserve an established layout. Keep imports free of network access,
+environment mutation, and other application startup work. Use context managers
+for owned resources, propagate async cancellation, and catch specific exceptions
+at boundaries where recovery or useful context can be added. Preserve public
+signatures, exception behavior, serialized formats, and supported Python versions.

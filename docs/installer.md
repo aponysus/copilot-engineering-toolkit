@@ -76,6 +76,13 @@ constraints, and real test commands. No command here inspects source to fill
 placeholders. Existing project instructions remain authoritative; preview any
 intentional replacement and keep useful local content.
 
+The `python` and `go` templates include opinionated development defaults and
+reusable setup/check commands. They still leave project facts and tool versions
+to be filled in. `init` writes only `AGENTS.md`: it does not create `pyproject.toml`,
+`go.mod`, lockfiles, environments, or tool configuration. Follow the selected
+template's setup guidance to adopt its defaults, reconciling existing conventions
+first. Use `base` when you want a tool-neutral scaffold.
+
 ## Writes, conflicts, and recovery
 
 To update copied toolkit content, obtain a reviewed newer checkout or wheel and
