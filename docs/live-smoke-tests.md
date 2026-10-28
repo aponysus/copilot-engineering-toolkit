@@ -39,7 +39,7 @@ Use the active version's controls; record unsupported features instead of
 inventing equivalent results. Do not change organization policy or authentication
 configuration to bypass an unavailable feature.
 
-## Rider and other JetBrains IDEs
+## Editor integration
 
 This check needs no Python and no real-task comparison. Copy
 `evals/fixtures/api_consumers/` to a temporary folder outside the toolkit checkout.
@@ -55,10 +55,11 @@ Create `AGENTS.md` there containing:
 This synthetic application's name is Copper Finch.
 ```
 
-1. Open that root in Rider. Record the IDE and Copilot plugin versions and the
-   selected harness. Use the IDE's Copilot Customizations controls to inspect
-   the repository instructions. Start a fresh session.
-2. Confirm Systems Investigator appears in the agent selector, then select it.
+1. Open that root in your editor. Record the editor and Copilot extension/plugin
+   versions and the selected agent mode. Inspect repository instructions using
+   the controls available in your client. Start a fresh session.
+2. If your client supports custom agents, confirm Systems Investigator appears
+   in the agent selector, then select it. Otherwise record that limitation.
 3. Ask: “What is this application's name according to AGENTS.md? Read service.py
    and identify both consumers of the count field. Cite their source locations.
    Do not edit files.” Verify the name, `dashboard`, and `export_row` against the
@@ -80,4 +81,4 @@ when your plugin supports it.
 For .NET onboarding, open the intended solution explicitly and record which
 solution and SDK the IDE uses. Directory visibility does not prove semantic
 loading or a successful build. See [native locations](native-locations.md) for
-host-specific limitations. No JetBrains live results are published yet.
+host-specific limitations. No editor integration live results are published yet.

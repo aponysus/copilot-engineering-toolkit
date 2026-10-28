@@ -1,7 +1,7 @@
 # Copilot Engineering Toolkit
 
 Reusable engineering instructions, agents, skills, and project templates for
-GitHub Copilot CLI and JetBrains. Start by copying one agent and one skill into
+GitHub Copilot. Start by copying one agent and one skill into
 an existing project. **No Python or installer is required.**
 
 ## Quick start: copy one agent and skill
@@ -18,8 +18,8 @@ Copy these two items into your target project's root, creating folders as needed
 Keep the skill's `SKILL.md` filename and any supporting files. If a destination
 already exists, compare it and keep a backup before replacing customized content.
 
-Open the target project in Rider, another supported JetBrains IDE, or GitHub
-Copilot CLI. Look for **Systems Investigator** in the agent selector. Select it
+Open the target project in your editor's Copilot chat or GitHub Copilot CLI.
+If your client supports custom agents, look for **Systems Investigator** in the agent selector. Select it
 and ask, substituting a real symbol from your project:
 
 > Read the source for `<symbol>` and use change-impact-analysis to identify its
@@ -29,8 +29,8 @@ Check one cited symbol against the source. Inspect the client's skill-loading
 indicator when available; an assistant's claim alone does not prove loading.
 If discovery is unavailable, paste the selected Markdown into chat and treat
 that as a fallback, not native discovery. See [native locations](docs/native-locations.md)
-and the [Rider smoke check](docs/live-smoke-tests.md#rider-and-other-jetbrains-ides)
-for version-specific checks. This workflow works through file copying on Windows,
+and the [editor smoke check](docs/live-smoke-tests.md#editor-integration)
+for client-specific checks. This workflow works through file copying on Windows,
 macOS, and Linux; live client support remains unverified for this library.
 
 ## Project setup: the recommended starter
@@ -112,6 +112,18 @@ copilot-toolkit install project /work/my-project --agents systems-investigator -
 
 No selection flags means the three-component **starter**, not the full collection.
 Global preferences, prompts, and language rules require explicit selection.
+To install only the engineering baseline and optional personal preferences for
+GitHub Copilot CLI:
+
+```sh
+copilot-toolkit install user --surface cli --global engineering,preferences-optional --dry-run
+copilot-toolkit install user --surface cli --global engineering,preferences-optional
+```
+
+This writes `~/.copilot/copilot-instructions.md` by default, without installing
+agents or skills. `COPILOT_HOME` or an explicit path override changes the location.
+Use `--global engineering` for the baseline alone. Editors may use different
+global instruction locations; the CLI destination does not configure every editor.
 See [installer usage](docs/installer.md) for global installation, updates, audits,
 and safety limits. Native Windows/macOS filesystem checks remain unverified;
 manual setup is the recommended starting point on those platforms.
