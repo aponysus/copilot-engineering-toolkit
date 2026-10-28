@@ -103,6 +103,11 @@ Development uses Python 3.11+, uv, pytest, isort, Ruff, and Black. See
 Tests cover catalog structure, installer safety, and static audit behavior, not
 model behavior. Keep distributable content in the catalog without duplicate exports.
 
+Five [synthetic evaluation cases](evals/README.md) cover missing authority, API
+consumers, duplicate dispatch, test oracles, and .NET onboarding. Use the
+[live client checks](docs/live-smoke-tests.md) separately to establish discovery
+and loading. Behavioral improvement has not yet been measured.
+
 Licensed under [Apache-2.0](LICENSE). The library expresses the author's supplied
 engineering requirements and reference principles in native Copilot formats.
 It includes no employer source or private repository history. Examples are

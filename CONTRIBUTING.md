@@ -31,13 +31,14 @@ versions; `uv sync --locked` creates or updates the local `.venv`.
 uv sync --locked
 uv run --locked pytest
 uv run --locked ruff check .
-uv run --locked isort --check-only src tests
-uv run --locked black --check src tests
+uv run --locked isort --check-only src tests evals scripts
+uv run --locked black --check src tests evals scripts
 uv build
+uv run --locked python scripts/verify_wheel.py dist/copilot_engineering_toolkit-0.1.0.dev0-py3-none-any.whl
 ```
 
-To apply import sorting and formatting, run `uv run --locked isort src tests`
-followed by `uv run --locked black src tests`. isort uses Black's compatibility
+To apply import sorting and formatting, run `uv run --locked isort src tests evals scripts`
+followed by `uv run --locked black src tests evals scripts`. isort uses Black's compatibility
 profile. Ruff handles linting and annotations; Black handles formatting, and
 isort owns import order. Update dependencies deliberately with uv and include the
 resulting lockfile changes.
@@ -51,10 +52,18 @@ can be adapted when substantive test changes warrant it.
 Keep changes coherent and scoped. Run checks appropriate to the affected
 contracts and failure modes, and expand verification only for material risk or
 unresolved evidence. Report actual results and update affected user documentation.
-For packaging changes, build and
-install the wheel into an isolated environment, change outside the checkout,
-and verify catalog files through `importlib.resources`. Model behavior and native
+For packaging changes, build and run `scripts/verify_wheel.py` with the actual
+wheel filename. It installs offline into a temporary environment, compares
+packaged catalog bytes, and exercises install/init/audit outside the checkout.
+The source distribution includes evaluation fixtures, their tests, and this script;
+the runtime wheel includes only the package and its catalog. Model behavior and native
 client discovery need separate live checks; report unperformed checks plainly.
+
+The [synthetic evaluations](evals/README.md) contain deliberate defects and an
+incorrect existing test oracle. Toolkit tests preserve those stimuli and verify
+their expected consequences; they do not certify the fixture implementations as
+correct. Pytest collects only `tests/`, not fixture-local tests. Keep evaluator
+answers outside the roots supplied to a client during a behavioral comparison.
 
 Write for users and maintainers, explaining behavior and consequential tradeoffs.
 Use existing authoritative documents rather than duplicate facts. Keep temporary
