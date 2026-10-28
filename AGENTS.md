@@ -3,7 +3,9 @@
 ## Purpose and source of truth
 
 Maintain reusable engineering guidance and portable Copilot customizations.
-Canonical distributable content lives in `src/copilot_engineering_toolkit/catalog/`.
+Canonical distributable content lives in the root `agents/`, `skills/`, `prompts/`,
+`instructions/`, `templates/`, and `global/` folders, indexed by `manifest.json`.
+Wheel builds bundle generated copies as package resources; never edit those copies.
 Do not maintain duplicate exported copies in this repository's `.github/` directory.
 Project templates are incomplete scaffolds; installed copies become project-owned.
 

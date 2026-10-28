@@ -2,12 +2,14 @@
 
 import unittest
 from collections.abc import Iterator
-from importlib.resources import files
 from importlib.resources.abc import Traversable
 
 import yaml
 
-CATALOG = files("copilot_engineering_toolkit").joinpath("catalog")
+from copilot_engineering_toolkit.catalog import TYPES
+from copilot_engineering_toolkit.resources import catalog_root
+
+CATALOG = catalog_root()
 CORE_SKILLS = {
     "repository-onboarding",
     "work-item-analysis",
@@ -112,7 +114,11 @@ class ContentTests(unittest.TestCase):
             self.assertTrue(prompt.read_text(encoding="utf-8").strip())
 
     def test_finished_content_has_no_scaffold_tokens(self) -> None:
-        for resource in descendants(CATALOG):
+        for resource in (
+            resource
+            for kind in TYPES
+            for resource in descendants(CATALOG.joinpath(kind))
+        ):
             if resource.name.endswith(".tmpl"):
                 continue
             with self.subTest(resource=str(resource)):

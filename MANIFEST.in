@@ -1,5 +1,13 @@
 include CONTRIBUTING.md
 include uv.lock
+include manifest.json
+graft agents
+graft skills
+graft prompts
+graft instructions
+graft templates
+graft global
 recursive-include docs *.md
 recursive-include evals *.md *.py *.cs *.csproj *.sln *.json
 recursive-include scripts *.py
+global-exclude __pycache__ *.py[cod]

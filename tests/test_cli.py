@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path, PurePosixPath, PureWindowsPath
 
-from copilot_engineering_toolkit.catalog import Catalog, safe_relative
+from copilot_engineering_toolkit.catalog import TYPES, Catalog, safe_relative
 from copilot_engineering_toolkit.cli import main
 from copilot_engineering_toolkit.errors import ToolkitError
 from copilot_engineering_toolkit.locations import user_locations
@@ -154,7 +154,11 @@ class CLITests(unittest.TestCase):
 
     def test_skill_supporting_resources_are_copied(self) -> None:
         catalog_root = self.root / "catalog"
-        shutil.copytree(Path(str(Catalog().root)), catalog_root)
+        catalog_root.mkdir()
+        source = Path(str(Catalog().root))
+        shutil.copy2(source / "manifest.json", catalog_root / "manifest.json")
+        for kind in TYPES:
+            shutil.copytree(source / kind, catalog_root / kind)
         resource = catalog_root / "skills/test-design/references/example.txt"
         resource.parent.mkdir()
         resource.write_bytes(b"supporting example")
@@ -238,7 +242,8 @@ class CatalogAndLocationTests(unittest.TestCase):
         source = Path(str(catalog.root))
         actual = {
             p.relative_to(source).as_posix()
-            for p in source.rglob("*")
+            for kind in TYPES
+            for p in (source / kind).rglob("*")
             if p.is_file() and p.suffix in (".md", ".tmpl")
         }
         self.assertEqual(paths, actual)

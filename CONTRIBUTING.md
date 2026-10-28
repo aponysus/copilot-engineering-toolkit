@@ -1,17 +1,30 @@
 # Contributing
 
-Edit canonical content in `src/copilot_engineering_toolkit/catalog/`. Agents
+Edit canonical content in the root `agents/`, `skills/`, `prompts/`,
+`instructions/`, `templates/`, and `global/` folders. Agents
 define distinct roles; skills define reusable methods; prompts launch tasks;
 templates contain conspicuous placeholders. Avoid duplicating whole methods
 inside agents or broad policies inside every file.
 
-Register each component in `catalog/manifest.json` with its type-qualified ID,
+Register each component in `manifest.json` with its type-qualified ID,
 tier, canonical source, and permitted destinations. The default starter selection
 is defined in `catalog.py`; the explicit core profile covers all core agents and
 skills. Other content requires explicit selection. Keep
 installation mappings declarative so adding a skill needs no installer change.
 Skill folders may contain supporting resources; the installer copies them as a
 unit. Runtime code uses the standard library; PyYAML is a test dependency only.
+
+`setup.py` adds a small setuptools build command that copies these folders and
+`manifest.json` into the wheel's `copilot_engineering_toolkit/catalog/` resources.
+It clears only the generated catalog before rebuilding to avoid stale resources.
+The source distribution retains the root layout and can build the same wheel.
+Do not create or edit a catalog copy under `src/`.
+
+Source and editable installs locate root content relative to their Python module;
+wheel installs use bundled resources through `importlib.resources`. Neither
+depends on the working directory. Both use the same catalog validation,
+selection, and installation code. No synchronization command or runtime network
+access is involved.
 
 A useful skill has a discriminating description, evidence to inspect, a method
 that changes decisions, a proportional output, and a stopping condition for
@@ -32,14 +45,14 @@ versions; `uv sync --locked` creates or updates the local `.venv`.
 uv sync --locked
 uv run --locked pytest
 uv run --locked ruff check .
-uv run --locked isort --check-only src tests evals scripts
-uv run --locked black --check src tests evals scripts
+uv run --locked isort --check-only src tests evals scripts setup.py
+uv run --locked black --check src tests evals scripts setup.py
 uv build
 uv run --locked python scripts/verify_wheel.py dist/copilot_engineering_toolkit-0.1.0.dev0-py3-none-any.whl
 ```
 
-To apply import sorting and formatting, run `uv run --locked isort src tests evals scripts`
-followed by `uv run --locked black src tests evals scripts`. isort uses Black's compatibility
+To apply import sorting and formatting, run `uv run --locked isort src tests evals scripts setup.py`
+followed by `uv run --locked black src tests evals scripts setup.py`. isort uses Black's compatibility
 profile. Ruff handles linting and annotations; Black handles formatting, and
 isort owns import order. Update dependencies deliberately with uv and include the
 resulting lockfile changes.

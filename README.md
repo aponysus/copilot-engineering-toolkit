@@ -6,14 +6,14 @@ an existing project. **No Python or installer is required.**
 
 ## Quick start: copy one agent and skill
 
-Download or clone this repository. Open the
-[content catalog](src/copilot_engineering_toolkit/catalog/) in your file manager.
+Download or clone this repository. Open its top-level [agents/](agents/) and
+[skills/](skills/) folders in your file manager.
 Copy these two items into your target project's root, creating folders as needed:
 
 | Copy from the catalog | Destination in your project |
 | --- | --- |
-| [agents/systems-investigator.agent.md](src/copilot_engineering_toolkit/catalog/agents/systems-investigator.agent.md) | `.github/agents/systems-investigator.agent.md` |
-| [skills/change-impact-analysis/](src/copilot_engineering_toolkit/catalog/skills/change-impact-analysis/) — the whole folder | `.github/skills/change-impact-analysis/` |
+| [agents/systems-investigator.agent.md](agents/systems-investigator.agent.md) | `.github/agents/systems-investigator.agent.md` |
+| [skills/change-impact-analysis/](skills/change-impact-analysis/) — the whole folder | `.github/skills/change-impact-analysis/` |
 
 Keep the skill's `SKILL.md` filename and any supporting files. If a destination
 already exists, compare it and keep a backup before replacing customized content.
@@ -35,7 +35,7 @@ macOS, and Linux; live client support remains unverified for this library.
 
 ## Project setup: the recommended starter
 
-Add [work-item-analysis](src/copilot_engineering_toolkit/catalog/skills/work-item-analysis/)
+Add [work-item-analysis](skills/work-item-analysis/)
 to the quick start by copying that entire folder into `.github/skills/`.
 The starter is now one agent and two skills:
 
@@ -43,17 +43,17 @@ The starter is now one agent and two skills:
 - **Work Item Analysis** turns a request into a bounded change and test approach.
 - **Change Impact Analysis** identifies affected consumers and regression risks.
 
-For project context, choose a [base](src/copilot_engineering_toolkit/catalog/templates/base/AGENTS.md.tmpl),
-[.NET](src/copilot_engineering_toolkit/catalog/templates/dotnet/AGENTS.md.tmpl),
-[Python](src/copilot_engineering_toolkit/catalog/templates/python/AGENTS.md.tmpl), or
-[Go](src/copilot_engineering_toolkit/catalog/templates/go/AGENTS.md.tmpl) scaffold.
+For project context, choose a [base](templates/base/AGENTS.md.tmpl),
+[.NET](templates/dotnet/AGENTS.md.tmpl),
+[Python](templates/python/AGENTS.md.tmpl), or
+[Go](templates/go/AGENTS.md.tmpl) scaffold.
 Copy it as `AGENTS.md` only if the project has none; otherwise compare it with
-existing instructions. Use the [bootstrap prompt](src/copilot_engineering_toolkit/catalog/prompts/bootstrap-agents.prompt.md)
+existing instructions. Use the [bootstrap prompt](prompts/bootstrap-agents.prompt.md)
 to fill it from repository evidence. Placeholders are not verified facts.
 The resulting instructions belong to the project and are never synchronized.
 
 For Copilot-specific context, optionally copy
-[project-context.md](src/copilot_engineering_toolkit/catalog/instructions/project-context.md)
+[project-context.md](instructions/project-context.md)
 as `.github/copilot-instructions.md`. Compare with existing rules first.
 This small bridge asks the agent to read project instructions; verify actual
 loading in your client rather than assuming the reference causes it.
@@ -79,24 +79,25 @@ implementation; specialist roles do not require a fixed sequence of steps.
 
 | Content | Canonical files |
 | --- | --- |
-| Agents | [Architect](src/copilot_engineering_toolkit/catalog/agents/architect.agent.md), [Systems Investigator](src/copilot_engineering_toolkit/catalog/agents/systems-investigator.agent.md), [Test Engineer](src/copilot_engineering_toolkit/catalog/agents/test-engineer.agent.md), [Documentation](src/copilot_engineering_toolkit/catalog/agents/documentation.agent.md) |
-| Prompts | [Four task launchers](src/copilot_engineering_toolkit/catalog/prompts/) |
-| Shared guidance | [Engineering baseline](src/copilot_engineering_toolkit/catalog/global/engineering.md), [optional personal preferences](src/copilot_engineering_toolkit/catalog/global/preferences-optional.md) |
-| Language instructions | [Opt-in C#, SQL, Python, and Go guidance](src/copilot_engineering_toolkit/catalog/instructions/) |
+| Agents | [Architect](agents/architect.agent.md), [Systems Investigator](agents/systems-investigator.agent.md), [Test Engineer](agents/test-engineer.agent.md), [Documentation](agents/documentation.agent.md) |
+| Prompts | [Four task launchers](prompts/) |
+| Shared guidance | [Engineering baseline](global/engineering.md), [optional personal preferences](global/preferences-optional.md) |
+| Language instructions | [Opt-in C#, SQL, Python, and Go guidance](instructions/) |
 
 All eight core skills remain available:
 
-- [Repository onboarding](src/copilot_engineering_toolkit/catalog/skills/repository-onboarding/)
-- [Work-item analysis](src/copilot_engineering_toolkit/catalog/skills/work-item-analysis/)
-- [Change-impact analysis](src/copilot_engineering_toolkit/catalog/skills/change-impact-analysis/)
-- [Test design](src/copilot_engineering_toolkit/catalog/skills/test-design/)
-- [Legacy contract analysis](src/copilot_engineering_toolkit/catalog/skills/legacy-contract-analysis/)
-- [API contract evolution](src/copilot_engineering_toolkit/catalog/skills/api-contract-evolution/)
-- [Database change safety](src/copilot_engineering_toolkit/catalog/skills/database-change-safety/)
-- [Incident triage](src/copilot_engineering_toolkit/catalog/skills/incident-triage/)
+- [Repository onboarding](skills/repository-onboarding/)
+- [Work-item analysis](skills/work-item-analysis/)
+- [Change-impact analysis](skills/change-impact-analysis/)
+- [Test design](skills/test-design/)
+- [Legacy contract analysis](skills/legacy-contract-analysis/)
+- [API contract evolution](skills/api-contract-evolution/)
+- [Database change safety](skills/database-change-safety/)
+- [Incident triage](skills/incident-triage/)
 
-The catalog stays in one canonical location so manual copies and packaged
-installations use the same content. No extended agents or skills are included.
+These top-level folders are the canonical content. Package builds bundle them
+automatically, so manual copies and CLI installations use the same files.
+No extended agents or skills are included.
 
 ## Advanced: optional CLI
 

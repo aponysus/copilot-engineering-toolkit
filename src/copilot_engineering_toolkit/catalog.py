@@ -4,11 +4,11 @@ import json
 import re
 from collections.abc import Iterator
 from dataclasses import dataclass
-from importlib.resources import files
 from importlib.resources.abc import Traversable
 from pathlib import PurePosixPath, PureWindowsPath
 
 from .errors import ToolkitError
+from .resources import catalog_root
 
 TYPES = ("agents", "skills", "prompts", "instructions", "templates", "global")
 STARTER = {
@@ -45,7 +45,7 @@ class Component:
 
 class Catalog:
     def __init__(self, root: Traversable | None = None) -> None:
-        self.root = root if root is not None else files(__package__).joinpath("catalog")
+        self.root = root if root is not None else catalog_root()
         try:
             manifest = json.loads(
                 self.root.joinpath("manifest.json").read_text(encoding="utf-8")

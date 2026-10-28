@@ -36,14 +36,24 @@ def verify(wheel: Path) -> None:
         AssertionError: Packaged content or CLI behavior differs from expectations.
         RuntimeError: A subprocess check fails.
     """
-    source = (
-        Path(__file__).resolve().parents[1] / "src/copilot_engineering_toolkit/catalog"
-    )
+    source = Path(__file__).resolve().parents[1]
+    manifest = source / "manifest.json"
+    kinds = {item["type"] for item in json.loads(manifest.read_text())["components"]}
+    resources = [
+        manifest,
+        *(
+            p
+            for kind in kinds
+            for p in (source / kind).rglob("*")
+            if p.is_file()
+            and "__pycache__" not in p.parts
+            and p.suffix not in {".pyc", ".pyo"}
+        ),
+    ]
     with zipfile.ZipFile(wheel) as archive:
         expected = {
             "copilot_engineering_toolkit/catalog/" + p.relative_to(source).as_posix(): p
-            for p in source.rglob("*")
-            if p.is_file()
+            for p in resources
         }
         actual = {
             name
@@ -56,6 +66,9 @@ def verify(wheel: Path) -> None:
             assert archive.read(name) == path.read_bytes(), name
     with tempfile.TemporaryDirectory(prefix="copilot-toolkit-wheel-") as directory:
         root = Path(directory).resolve()
+        (root / "manifest.json").write_text(
+            "invalid unrelated catalog", encoding="utf-8"
+        )
         environment = root / "environment"
         venv.EnvBuilder(with_pip=True).create(environment)
         binary = environment / ("Scripts" if os.name == "nt" else "bin")

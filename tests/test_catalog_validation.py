@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from copilot_engineering_toolkit.catalog import Catalog
+from copilot_engineering_toolkit.catalog import TYPES, Catalog
 from copilot_engineering_toolkit.cli import main
 from copilot_engineering_toolkit.errors import ToolkitError
 
@@ -17,7 +17,11 @@ def test_invalid_manifest_fails_before_any_installation(
     tmp_path: Path, defect: str
 ) -> None:
     root = tmp_path / "catalog"
-    shutil.copytree(Path(str(Catalog().root)), root)
+    root.mkdir()
+    source = Path(str(Catalog().root))
+    shutil.copy2(source / "manifest.json", root / "manifest.json")
+    for kind in TYPES:
+        shutil.copytree(source / kind, root / kind)
     manifest_file = root / "manifest.json"
     manifest = json.loads(manifest_file.read_text())
     item = manifest["components"][0]
