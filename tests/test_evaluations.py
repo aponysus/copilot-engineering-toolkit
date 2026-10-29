@@ -87,3 +87,25 @@ def test_onboarding_solution_references_resolve_to_distinct_frameworks() -> None
             for dependency in tree.findall(".//ProjectReference"):
                 assert (project.parent / dependency.attrib["Include"]).is_file()
     assert frameworks == {"Legacy": ["net48", "net48"], "Modern": ["net8.0"]}
+
+
+def test_documentation_fixture_is_isolated_and_links_resolve() -> None:
+    root = FIXTURES / "documentation_usability"
+    files = list(root.rglob("*"))
+    pages = [p for p in files if p.is_file()]
+    assert {p.relative_to(root).as_posix() for p in pages} == {
+        "docs/index.md",
+        "docs/processing.md",
+        "docs/notes.md",
+        "docs/troubleshooting.md",
+    }
+    for page in pages:
+        for target in re.findall(r"\]\(([^)]+)\)", page.read_text()):
+            assert (page.parent / target).is_file()
+    text = "\n".join(p.read_text() for p in pages)
+    assert "maximum retry" not in text.lower()
+    assert "Evaluator key" not in text
+    diagram = (root / "docs/processing.md").read_text()
+    assert "C[Completed]" in diagram and "C -->|lease expires| Q" in diagram
+    assert "Expired leases return jobs to the ready queue" in diagram
+    assert (root.parent.parent / "documentation-usability.md").is_file()

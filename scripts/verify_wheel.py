@@ -134,10 +134,10 @@ def verify(wheel: Path) -> None:
         optional = [
             c
             for c in components
-            if c["tier"] == "extended" and c["type"] in {"skills", "prompts"}
+            if c["tier"] == "extended" and c["type"] in {"agents", "skills", "prompts"}
         ]
         selection = [str(cli), "install", "project", str(project)]
-        for kind in ("skills", "prompts"):
+        for kind in ("agents", "skills", "prompts"):
             selection.extend(
                 [
                     "--" + kind,

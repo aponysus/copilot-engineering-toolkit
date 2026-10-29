@@ -106,6 +106,13 @@ add no value to this task. Use the same scorecard below and retain unfavorable
 or inconclusive comparisons. Static content checks do not establish these
 behavioral outcomes or automatic skill loading.
 
+## Documentation usability
+
+The separate [documentation-usability comparison](documentation-usability.md) uses
+a fictional docs-only fixture, reader tasks, and a key outside its accessible root.
+It compares comprehension, findability, actionability, uncertainty, and diagram
+review without requiring source code or a rendering dependency.
+
 ## Scorecard
 
 For each response, score the following dimensions 0 (material failure),

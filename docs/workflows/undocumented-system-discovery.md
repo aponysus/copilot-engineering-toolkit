@@ -186,3 +186,7 @@ understand what is established, and identify the next evidence needed. One
 well-supported slice is useful before every calculation is understood. Stop an
 experiment when it resolves the question, yields an honestly inconclusive
 result, or requires a new access/data decision.
+
+For a separate reader-experience pass after authoring, use the optional
+[documentation-quality review](documentation-quality-review.md). It complements
+source review with documentation-only reader tasks.

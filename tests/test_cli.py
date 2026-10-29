@@ -27,9 +27,9 @@ class CLITests(unittest.TestCase):
     def test_catalog_and_paths_do_not_create_home(self) -> None:
         code, out, _ = self.run_cli("catalog", "--type", "skills")
         self.assertEqual(code, 0)
-        self.assertEqual(len(out.splitlines()), 10)
+        self.assertEqual(len(out.splitlines()), 13)
         self.assertEqual(sum("\tcore\t" in line for line in out.splitlines()), 8)
-        self.assertEqual(sum("\textended\t" in line for line in out.splitlines()), 2)
+        self.assertEqual(sum("\textended\t" in line for line in out.splitlines()), 5)
         home = self.root / "home"
         code, out, _ = self.run_cli("paths", "--surface", "cli", "--home", home)
         self.assertEqual(code, 0)

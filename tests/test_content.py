@@ -21,7 +21,14 @@ CORE_SKILLS = {
     "incident-triage",
 }
 CORE_AGENTS = {"architect", "systems-investigator", "test-engineer", "documentation"}
-EXTENDED_SKILLS = {"source-behavior-documentation", "runtime-characterization"}
+EXTENDED_AGENTS = {"documentation-reviewer"}
+EXTENDED_SKILLS = {
+    "source-behavior-documentation",
+    "runtime-characterization",
+    "documentation-quality-review",
+    "diagram-review",
+    "rendered-docs-review",
+}
 CORE_PROMPTS = {
     "analyze-work-item",
     "bootstrap-agents",
@@ -32,6 +39,7 @@ EXTENDED_PROMPTS = {
     "map-undocumented-system",
     "document-subsystem",
     "characterize-runtime",
+    "review-documentation",
 }
 
 
@@ -79,7 +87,8 @@ class ContentTests(unittest.TestCase):
     ) -> None:
         agents = list(CATALOG.joinpath("agents").iterdir())
         self.assertEqual(
-            {a.name for a in agents}, {f"{a}.agent.md" for a in CORE_AGENTS}
+            {a.name for a in agents},
+            {f"{a}.agent.md" for a in CORE_AGENTS | EXTENDED_AGENTS},
         )
         for agent in agents:
             with self.subTest(agent=agent.name):

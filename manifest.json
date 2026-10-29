@@ -304,6 +304,55 @@
       "destinations": {
         "project": ".github/copilot-instructions.md"
       }
+    },
+    {
+      "id": "documentation-reviewer",
+      "type": "agents",
+      "tier": "extended",
+      "path": "agents/documentation-reviewer.agent.md",
+      "destinations": {
+        "project": ".github/agents/documentation-reviewer.agent.md",
+        "user-cli": "agents/documentation-reviewer.agent.md"
+      }
+    },
+    {
+      "id": "documentation-quality-review",
+      "type": "skills",
+      "tier": "extended",
+      "path": "skills/documentation-quality-review/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/documentation-quality-review/SKILL.md",
+        "user-cli": "skills/documentation-quality-review/SKILL.md"
+      }
+    },
+    {
+      "id": "diagram-review",
+      "type": "skills",
+      "tier": "extended",
+      "path": "skills/diagram-review/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/diagram-review/SKILL.md",
+        "user-cli": "skills/diagram-review/SKILL.md"
+      }
+    },
+    {
+      "id": "rendered-docs-review",
+      "type": "skills",
+      "tier": "extended",
+      "path": "skills/rendered-docs-review/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/rendered-docs-review/SKILL.md",
+        "user-cli": "skills/rendered-docs-review/SKILL.md"
+      }
+    },
+    {
+      "id": "review-documentation",
+      "type": "prompts",
+      "tier": "extended",
+      "path": "prompts/review-documentation.prompt.md",
+      "destinations": {
+        "project": ".github/prompts/review-documentation.prompt.md"
+      }
     }
   ]
 }

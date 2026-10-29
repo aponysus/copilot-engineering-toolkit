@@ -117,6 +117,16 @@ and later controlled runtime experiments. It uses the existing agents with
 Manual copying is sufficient. These extended components require explicit
 selection and are not included in starter or core.
 
+## Optional: review documentation quality
+
+Use the [documentation-quality workflow](docs/workflows/documentation-quality-review.md)
+for independent reader review with [Documentation Reviewer](agents/documentation-reviewer.agent.md),
+[documentation-quality-review](skills/documentation-quality-review/SKILL.md),
+[diagram-review](skills/diagram-review/SKILL.md),
+[rendered-docs-review](skills/rendered-docs-review/SKILL.md), and the
+[review prompt](prompts/review-documentation.prompt.md). These five extended
+components are individually opt-in; starter and core are unchanged.
+
 ## Advanced: optional CLI
 
 For repeated installations, the CLI offers component selection, preview diffs,
