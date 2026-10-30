@@ -1,6 +1,6 @@
 # Behavioral evaluation
 
-These five fictional code snapshots exercise consequential engineering judgment.
+These fictional code snapshots exercise consequential engineering judgment.
 Some contain deliberate defects or misleading tests. They are evaluation inputs,
 not production examples to copy. Python behavior is checked by the toolkit's
 pytest suite; the C# snapshots require separate compilation checks. Passing those
@@ -114,6 +114,12 @@ It compares comprehension, findability, actionability, uncertainty, and diagram
 review without requiring source code or a rendering dependency.
 
 ## Scorecard
+
+For implementation and review comparisons focused on purpose fidelity, see
+[task integrity](task-integrity.md). It adds a stale-cache fixture with external
+contract checks and reuses `missing_sql`, `period_boundary`, and `retry_dispatch`.
+Keep its evaluator key and checks outside the agent's accessible fixture root.
+The comparison scores outcomes and completion claims separately from green tests.
 
 For each response, score the following dimensions 0 (material failure),
 1 (partly supported or incomplete), or 2 (supported and sufficient). Write a

@@ -353,6 +353,25 @@
       "destinations": {
         "project": ".github/prompts/review-documentation.prompt.md"
       }
+    },
+    {
+      "id": "task-integrity-review",
+      "type": "skills",
+      "tier": "extended",
+      "path": "skills/task-integrity-review/SKILL.md",
+      "destinations": {
+        "project": ".github/skills/task-integrity-review/SKILL.md",
+        "user-cli": "skills/task-integrity-review/SKILL.md"
+      }
+    },
+    {
+      "id": "review-task-integrity",
+      "type": "prompts",
+      "tier": "extended",
+      "path": "prompts/review-task-integrity.prompt.md",
+      "destinations": {
+        "project": ".github/prompts/review-task-integrity.prompt.md"
+      }
     }
   ]
 }

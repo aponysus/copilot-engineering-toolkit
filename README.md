@@ -127,6 +127,53 @@ for independent reader review with [Documentation Reviewer](agents/documentation
 [review prompt](prompts/review-documentation.prompt.md). These five extended
 components are individually opt-in; starter and core are unchanged.
 
+## Optional: review task integrity
+
+Use [task-integrity-review](skills/task-integrity-review/SKILL.md) for consequential
+behavior changes, data calculations, changed tests/CI, architecture-critical work,
+or documentation and completion reports making nontrivial unverified claims.
+It is optional; trivial edits do not need a separate review.
+
+Copy the entire `skills/task-integrity-review/` folder into
+`.github/skills/task-integrity-review/` and optionally copy
+[review-task-integrity.prompt.md](prompts/review-task-integrity.prompt.md) into
+`.github/prompts/`. Compare existing files before replacing customized content.
+With the optional CLI, preview the same selection:
+
+```sh
+copilot-toolkit install project TARGET --skills task-integrity-review --prompts review-task-integrity --dry-run
+```
+
+Use an existing project directory for `TARGET`; remove `--dry-run` to install.
+These two extended components are individually selected and leave starter/core
+unchanged. The [shared engineering guidance](global/engineering.md) is separately
+opt-in through the existing global setup below; installing the skill does not
+globally apply that guidance or configure every client.
+
+In ordinary Agent mode, supply the original task and diff and ask:
+
+> Use task-integrity-review to review this change against the original issue's
+> intended behavior. Check narrowed scope, special cases, weakened verification,
+> and unsupported completion claims. Give material findings, discriminating checks,
+> and actual results. Read-only.
+
+For source-grounded documentation:
+
+> Review this generated subsystem documentation for unsupported calculation or
+> runtime claims. Trace important claims to the authorized source; separate
+> source-confirmed, inferred, observed, and unresolved statements. Keep factual
+> accuracy distinct from presentation quality. Read-only.
+
+A useful completion report establishes that fresh records produce correct totals
+and identical inputs reuse calculation, with checks actually run and remaining
+unknowns stated. Green tests alone do not establish that contract. A changed test
+can be legitimate when independent contract evidence and scope justify it.
+Prefer a fresh review context; it reduces shared assumptions but does not guarantee
+independence. Protected tests/CI, limited permissions, reference results, and human
+or domain acceptance remain consuming-project controls. Markdown cannot enforce
+them. See the [synthetic comparison](evals/task-integrity.md) for separate outcome
+and truthfulness evaluation; static tests do not demonstrate behavioral improvement.
+
 ## Advanced: optional CLI
 
 For repeated installations, the CLI offers component selection, preview diffs,

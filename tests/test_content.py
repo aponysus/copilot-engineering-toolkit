@@ -23,6 +23,7 @@ CORE_SKILLS = {
 CORE_AGENTS = {"architect", "systems-investigator", "test-engineer", "documentation"}
 EXTENDED_AGENTS = {"documentation-reviewer"}
 EXTENDED_SKILLS = {
+    "task-integrity-review",
     "source-behavior-documentation",
     "runtime-characterization",
     "documentation-quality-review",
@@ -36,6 +37,7 @@ CORE_PROMPTS = {
     "review-change",
 }
 EXTENDED_PROMPTS = {
+    "review-task-integrity",
     "map-undocumented-system",
     "document-subsystem",
     "characterize-runtime",

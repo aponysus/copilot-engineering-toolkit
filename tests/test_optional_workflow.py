@@ -22,6 +22,7 @@ def snapshot(root: Path) -> dict[Path, tuple[bytes, int]]:
         ("source-behavior-documentation", "map-undocumented-system"),
         ("source-behavior-documentation", "document-subsystem"),
         ("runtime-characterization", "characterize-runtime"),
+        ("task-integrity-review", "review-task-integrity"),
     ],
 )
 def test_selective_workflow_preview_and_install_preserve_existing_files(
@@ -64,9 +65,23 @@ def test_selective_workflow_preview_and_install_preserve_existing_files(
     assert main(args) == 0
     assert snapshot(root) == after
 
+    # A conflict in the prompt must prevent even the missing skill being copied.
+    (root / f".github/skills/{skill}/SKILL.md").unlink()
+    (root / f".github/prompts/{prompt}.prompt.md").write_bytes(b"Customized prompt\n")
+    conflicted = snapshot(root)
+    tree = set(root.rglob("*"))
+    assert main(args) == 1
+    assert snapshot(root) == conflicted
+    assert set(root.rglob("*")) == tree
+
 
 @pytest.mark.parametrize(
-    "skill", ["source-behavior-documentation", "runtime-characterization"]
+    "skill",
+    [
+        "source-behavior-documentation",
+        "runtime-characterization",
+        "task-integrity-review",
+    ],
 )
 def test_optional_skill_can_be_selected_for_cli_user_scope(
     tmp_path: Path, skill: str
@@ -75,6 +90,7 @@ def test_optional_skill_can_be_selected_for_cli_user_scope(
     global_file = root / "copilot-instructions.md"
     global_file.write_bytes(b"Existing preferences\n")
     before = snapshot(root)
+    tree = set(root.rglob("*"))
     args = [
         "install",
         "user",
@@ -87,6 +103,7 @@ def test_optional_skill_can_be_selected_for_cli_user_scope(
     ]
     assert main([*args, "--dry-run"]) == 0
     assert snapshot(root) == before
+    assert set(root.rglob("*")) == tree
     assert main(args) == 0
     destination = Path(f"skills/{skill}/SKILL.md")
     after = snapshot(root)
@@ -99,6 +116,8 @@ def test_optional_skill_can_be_selected_for_cli_user_scope(
         "user-cli": destination.as_posix(),
     }
     assert (root / destination).read_bytes() == catalog.read(item)
+    assert main(args) == 0
+    assert snapshot(root) == after
 
 
 REVIEW_SELECTION = {
